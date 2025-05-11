@@ -1,0 +1,213 @@
+﻿@model EntityCommentsViewModel
+
+@{
+    var haveComments = Model != null && Model.Comments != null && Model.Comments.Count > 0;
+
+    var defaultRating = ConfigurationsHelper.DefaultRating;
+    var itemRating = haveComments ? Math.Ceiling(Model.Comments.Average(x => x.Rating)) : 0;
+
+    var commentsTitle = string.Format("{0} {1}", haveComments ? Model.Comments.Count : 0, haveComments && Model.Comments.Count > 1 ? "PP.ProductDetails.Comments".LocalizedString() : "PP.ProductDetails.Comment".LocalizedString());
+}
+
+<div class="customer-review-option">
+    <div class="row comments-container">
+        <div class="col-lg-8">
+            <h4>@commentsTitle</h4>
+            <div class="col-container">
+                <div class="comment-option">
+                    @if (haveComments)
+                    {
+                        <div class="container">
+                            @foreach (var comment in Model.Comments.Where(x => x.User != null))
+                            {
+                                var defaultStars = ConfigurationsHelper.DefaultRating - comment.Rating;
+
+                                <div class="commentRow row mb-2 pb-2 border-bottom">
+                                    <div class="col-xs-2 col-md-1 col-lg-1 p-0">
+                                        @Html.UserAvatar(comment.User.Picture, "img-responsive img-thumbnail", alt: comment.User.UserName)
+                                    </div>
+                                    <div class="col-xs-10 col-md-11 col-lg-11">
+                                        <div class="mb-2">
+                                            <div class="mic-info d-flex align-items-center">
+                                                @("PP.UserProfile.UserComments.CommentUserName".LocalizedString().Replace("{user}", comment.User.FullName))
+                                                <div class="small text-muted ml-auto ltr-dir">
+                                                    @("PP.UserProfile.UserComments.CommentTimestamp".LocalizedString().Replace("{datetime}", comment.TimeStamp.ToString()))
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-auto text-warning">
+                                                @for (int i = 1; i <= comment.Rating; i++)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+
+                                                @for (int i = 1; i <= defaultStars; i++)
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            </div>
+                                            @if (User.Identity.GetUserId() == comment.User.Id)
+                                            {
+                                                <div class="ml-auto text-danger pointerCursor">
+                                                    <i class="fas fa-trash-alt deleteButton" title="@("PP.UserProfile.UserComments.DeleteComment".Localized())" data-id="@comment.ID"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="comment-text mt-2">
+                                            @comment.Text
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary error-message" role="alert">
+                            @("PP.ProductDetails.NoCommentsOnProduct".Localized())
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <h4>@("PP.ProductDetails.LeaveComment".Localized())</h4>
+            <div class="col-container">
+                <div class="leave-comment comment-input-container">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form id="commentForm" action="#" method="post" class="comment-form">
+                            <div class="personal-rating">
+                                <span>@("PP.ProductDetails.YourRating".Localized())</span>
+                                <div class="rating">
+                                    @for (int i = 1; i <= defaultRating; i++)
+                                    {
+                                        <i class="ratingStar fas fa-star" data-value="@i"></i>
+                                    }
+                                </div>
+                                <span id="ratingDisplay">5</span> @("PP.ProductDetails.Star".Localized())
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="hidden" name="EntityID" value="@Model.EntityID" />
+                                    <input type="hidden" name="RecordID" value="@Model.RecordID" />
+                                    <input type="hidden" name="Rating" id="ratingsValue" value="@defaultRating" />
+
+                                    <textarea cols="30" rows="5" name="Text" placeholder="@("PP.ProductDetails.CommentPlaceholder".Localized())"></textarea>
+                                    <button id="btnComment" type="button" class="site-btn">@("PP.ProductDetails.LeaveYourComment".Localized())</button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info error-message" role="alert">
+                            @("PP.ProductDetails.LoginToComment".Localized())
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	$("#commentForm").validate({
+		errorClass: "alert alert-danger",
+		errorElement: "div",
+		rules: {
+			Text: {
+				required: true,
+				minlength: 15,
+				maxlength: 500
+			},
+			EntityID: {
+				required: true
+			},
+			RecordID: {
+				required: true
+			},
+		},
+		messages: {
+			Text: {
+				required: "@("PP.ProductDetails.Comments.Validations.TextRequired".Localized())",
+				minlength: "@("PP.ProductDetails.Comments.Validations.TextMinLength".LocalizedString().Replace("{min}", "15"))",
+				maxlength: "@("PP.ProductDetails.Comments.Validations.TextMaxLength".LocalizedString().Replace("{max}", "500"))"
+			},
+			EntityID: {
+				required: "@("PP.ProductDetails.Comments.Validations.EntityRequired".Localized())"
+			},
+			RecordID: {
+				required: "@("PP.ProductDetails.Comments.Validations.RecordIDRequired".Localized())",
+			}
+		},
+		highlight: function (element, errorClass) {
+			$(element).removeClass(errorClass);
+		}
+	});
+
+	$("#btnComment").click(function () {
+		if ($("#commentForm").valid()) {
+			$.ajax({
+				url: "@Url.LeaveComment()",
+				type: "post",
+				data: $("#commentForm").serialize()
+			})
+			.done(function (response) {
+				if (response.Success) {
+					window.location.reload();
+				}
+				else {
+                    Swal.fire("@("PP.Message.Error".Localized())", response.Message, "error");
+				}
+			})
+			.fail(function () {
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+			});
+		}
+	});
+
+    $(".ratingStar").click(function () {
+		$(".ratingStar").addClass("far").removeClass("fas");
+
+        var $thisStar = $(this);
+        $thisStar.addClass("fas").removeClass("far");
+		$thisStar.prevAll(".ratingStar").addClass("fas").removeClass("far");
+        $("#ratingsValue").val($thisStar.attr("data-value"));
+        $("#ratingDisplay").html($thisStar.attr("data-value"));
+    });
+
+    $(".deleteButton").click(function () {
+        swal.fire({
+			title: "@("PP.ProductDetails.CommentDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("PP.ProductDetails.CommentDeleteConfirm".Localized())',
+            cancelButtonText: '@("PP.ProductDetails.CommentDeleteCancel".Localized())'
+		})
+		.then((result) => {
+			if (result.value) {
+				$("#dtLoader").show();
+				$("#response-holder").hide();
+
+				$.ajax({
+					url: "@Url.DeleteComment()",
+                    method: "post",
+                    data: { id : $(this).attr("data-id") }
+				})
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+					    window.location.reload();
+				    }
+				    else {
+                        Swal.fire("@("PP.Message.Error".LocalizedString())", response.Message, "error");
+				    }
+				});
+			}
+		});
+     });
+</script>

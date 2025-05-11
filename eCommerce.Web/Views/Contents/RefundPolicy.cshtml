@@ -1,0 +1,200 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+
+@{
+    //Model.PageTitle = "PP.Register.Title".LocalizedString();
+    //Model.PageDescription = "PP.Register.Description".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+    Model.PageTitle = "Refund Policy";
+    Model.PageURL = Url.StaticPage("RefundPolicy");
+    Model.PageImageURL = PictureHelper.PageImageURL("refund-policy.jpg");
+}
+
+<div class="register-login-section spad">
+    <div class="container" id="register-container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="login-form page-content-holder">
+                    <div class="page-content-header">
+                        <h2>@Model.PageTitle</h2>
+                    </div>
+                    <section class="section-margin--small">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col col-12">
+                                    <div class="clearfix" style="">
+                                        <p> If your product is eligible for a refund, you can choose your preferred refund method based on the table below. The shipping fee is refunded along with the amount paid for your returned product.</p>
+                                        <p>The time required to complete a refund depends on the refund method you have selected. The refund time starts once the quality check is completed. (For quality check timelines refere table below)</p>
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Item Type</th>
+                                                    <th>Drop Off TAT</th>
+                                                    <th>Pickup TAT</th>
+                                                    <th>Hand over to @ConfigurationsHelper.ApplicationName WH</th>
+                                                    <th>QC TAT</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>Non Bulky</td>
+                                                    <td>48 hours from return request initiated</td>
+                                                    <td>N/A</td>
+                                                    <td>3 working days</td>
+                                                    <td>2 - 3 working days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Bulky </td>
+                                                    <td>N/A</td>
+                                                    <td>5 working days from return request initiated</td>
+                                                    <td>5 working days once the item is picked</td>
+                                                    <td>2 - 3 working days</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="panel-group">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Payment Method</th>
+                                                    <th>Refund Option</th>
+                                                    <th>Refund Time</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>Debit/ Credit Card</td>
+                                                    <td>Debit/ Credit Card</td>
+                                                    <td>10 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td rowspan="2">HBL Direct Transfer</td>
+                                                    <td>HBL Account</td>
+                                                    <td>5 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Refund Voucher</td>
+                                                    <td>2 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                    <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                    <td>1 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Equated Monthly Installments</td>
+                                                    <td>Credit Card</td>
+                                                    <td>10 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td rowspan="2">Easypaisa Wallet</td>
+                                                    <td>Easypaisa Wallet</td>
+                                                    <td>5 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                    <td>1 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Easypaisa Shop (OTC)</td>
+                                                    <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                    <td>1 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cash on Delivery (COD)</td>
+                                                    <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                    <td>1 Working Days</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@ConfigurationsHelper.ApplicationName Refund Voucher</td>
+                                                    <td>Refund Voucher</td>
+                                                    <td>2 Working Days</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                        <div class="tg-wrap">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>Modes of Refund</th>
+                                                        <th>Description</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                        <td>The @ConfigurationsHelper.ApplicationName Wallet needs to be activated in order to access the refund amount. Refunds can also be withdrawn to a bank account from within the @ConfigurationsHelper.ApplicationName Wallet. All orders paid through Cash on Delivery (COD) or Easypaisa Shop (OTC) will only be refunded to the @ConfigurationsHelper.ApplicationName Wallet.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Refund Voucher</td>
+                                                        <td>Vouchers will be sent to the customer registered email ID on @ConfigurationsHelper.ApplicationName and can be redeemed against the same email ID.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Debit Card or Credit Card</td>
+                                                        <td>If the refunded amount is not reflecting in your card statement after the refund is completed and you have received a notification by @ConfigurationsHelper.ApplicationName, please contact your personal bank.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Easypaisa Wallet</td>
+                                                        <td>If the refunded amount is not reflecting in your Easypaisa Wallet statement after refund is completed:i)&nbsp;&nbsp;Please dial 3737 from your Easypaisa number or 051-111-345-100 from any other number to contact the Easypaisa helpcenter.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Bank Deposit</td>
+                                                        <td>The bank account details provided must be correct and the account must be active and should hold some balance. Do not provide account details of Basic Bank Account (BBA), National Bank and Khyber bank as refunds cannot be processed for these options.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <p>Important Note: The Voucher discount code can only be applied once. The leftover amount will not be refunded or used for next purchase even if the value of order is smaller than voucher value.</p>
+                                    <br>
+                                    <p>
+                                        Pre-Paid Orders Failed/False Delivery Refund Grid:
+                                    </p>
+                                    <table class="table table-hover">
+                                        <tbody>
+                                            <tr>
+                                                <th>Payment Method</th>
+                                                <th>Refund Option</th>
+                                                <th>Refund Time</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Debit/Credit Card</td>
+                                                <td>Debit/Credit Card</td>
+                                                <td>25 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>HBL Direct Transfer</td>
+                                                <td>HBL Account</td>
+                                                <td>20 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                <td>16 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Equated Monthly Installments</td>
+                                                <td>Credit Card</td>
+                                                <td>25 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Easypaisa Wallet</td>
+                                                <td>Easypaisa Wallet</td>
+                                                <td>20 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Easypaisa Shop (OTC)</td>
+                                                <td>@ConfigurationsHelper.ApplicationName Wallet</td>
+                                                <td>16 Working Days</td>
+                                            </tr>
+                                            <tr>
+                                                <td>@ConfigurationsHelper.ApplicationName Refund Voucher</td>
+                                                <td>Refund Voucher</td>
+                                                <td>17 Working Days</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

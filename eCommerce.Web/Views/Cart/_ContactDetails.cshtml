@@ -1,0 +1,77 @@
+﻿@model eCommerce.Web.ViewModels.CheckoutViewModel
+
+@if (Model != null && Model.User != null)
+{
+    <form id="contactDetailsForm">
+        <div class="form-group">
+            <label>@("PP.Checkout.FullName".LocalizedString())</label>
+            <input name="FullName" type="text" class="form-control" value="@Model.User.FullName" required placeholder="@("PP.Checkout.FullName".LocalizedString())">
+        </div>
+        <div class="form-row mb-3">
+            <div class="col">
+                <label>@("PP.Checkout.Email".LocalizedString())</label>
+                <input name="Email" type="email" class="form-control" value="@Model.User.Email" required placeholder="contact@email.com">
+            </div>
+            <div class="col">
+                <label>@("PP.Checkout.PhoneNumber".LocalizedString())</label>
+                <input name="PhoneNumber" type="tel" class="form-control ltr-dir @(AppDataHelper.IsRTL ? "text-left" : string.Empty)" value="@Model.User.PhoneNumber" placeholder="+12 34567890">
+            </div>
+        </div>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <input type="hidden" value="@Model.User.Id" name="UserID" />
+            <div class="form-group">
+                <div class="create-item py-0">
+                    <label for="CreateAccount">
+                        @("PP.Checkout.CreateAccount".LocalizedString())
+                        <input id="CreateAccount" name="CreateAccount" type="checkbox" value="true">
+                        <input name="CreateAccount" type="hidden" value="false">
+                        <span class="checkmark"></span>
+                    </label>
+                    <a href="@Url.Login(returnUrl: Url.Checkout())" class="text-info" style="font-size:14px">
+                        @("PP.Checkout.AlreadyHaveAccount".LocalizedString())
+                    </a>
+                </div>
+            </div>
+        }
+    </form>
+}
+
+<script>
+    $("#contactDetailsForm").validate({
+        ignore: [],
+        errorClass: "alert alert-danger mb-0 rounded-0",
+        errorElement: "div",
+        rules: {
+            FullName: {
+                required: true,
+                minlength: 3,
+                maxlength: 25
+            },
+            Email: {
+                email: true,
+                required: true,
+            },
+            PhoneNumber: {
+                required: true,
+            }
+        },
+        messages: {
+            FullName: {
+                required: "@("PP.Checkout.CreateAccount.Validations.FullNameRequired".LocalizedString())",
+                minlength: "@("PP.Checkout.CreateAccount.Validations.FullNameMinimumLength".LocalizedString().Replace("{min}", "3"))",
+                maxlength: "@("PP.Checkout.CreateAccount.Validations.FullNameMaximumLength".LocalizedString().Replace("{max}", "25"))"
+            },
+            Email: {
+                email: "@("PP.Checkout.CreateAccount.Validations.ProvideValidEmail".LocalizedString())",
+                required: "@("PP.Checkout.CreateAccount.Validations.EmailRequired".LocalizedString())",
+            },
+            PhoneNumber: {
+                required: "@("PP.Checkout.CreateAccount.Validations.PhoneNumberRequired".LocalizedString())",
+            }
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+</script>

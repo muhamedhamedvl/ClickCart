@@ -1,0 +1,99 @@
+﻿@model eCommerce.Web.ViewModels.PriceRangeFilterViewModel
+
+@if (Model != null)
+{
+    int priceRangeMin = 0;
+
+    //int priceRangeMax = Model.Products != null && Model.Products.Count > 0 ? (int)Model.Products.Max(x => x.Price) : 10000;
+    //dont use above approach because the Model.Products are paged results so there could be a scenerio where we get the
+    //max price from Model.Products to be 99 but in reality there could be a product with a higher Price on page 2.
+
+    //decimal priceRangeMax = Math.Round(Model.MaxPrice); //just give a max ideal number. There should be a service for it but it could affect the loading speed.
+
+    //round off to nearest hundred
+    int priceRangeMax = (int)Math.Round(Model.MaxPrice / 100);    
+    if (priceRangeMax == 0) {
+      priceRangeMax = 1;
+    }
+    priceRangeMax = (int)(priceRangeMax * 100);
+
+    var priceStartFrom = Model.PriceFrom.HasValue ? Model.PriceFrom.Value : priceRangeMin;
+    var priceStartTo = Model.PriceTo.HasValue && Model.PriceTo.Value <= priceRangeMax ? Model.PriceTo.Value : priceRangeMax;
+
+    var priceCurrencyFormat = ConfigurationsHelper.PriceCurrencyPosition.Replace("{currency}", string.Format("'{0}'", ConfigurationsHelper.CurrencySymbol));
+
+    var isCurrencyFirst = ConfigurationsHelper.PriceCurrencyPosition.Trim().StartsWith("{currency}");
+
+    <div class="filter-widget">
+        <h4 class="fw-title">@("PP.Search.PriceRange".LocalizedString())</h4>
+        <div class="px-2">
+            <div class="filter-range-wrap">
+                <div class="range-slider">
+                    <div class="price-input">
+                        <input type="text" id="minamount" value="@priceRangeMin" disabled="disabled">
+                        <input type="text" id="maxamount" value="@priceRangeMax" disabled="disabled">
+                    </div>
+                </div>
+                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                     data-min="0" data-max="100">
+                    <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                </div>
+            </div>
+            <form id="priceRangeForm" method="post" action="">
+                <input type="hidden" name="from" value="@(priceStartFrom > priceRangeMin ? string.Format("{0}", priceStartFrom) : "")" @(priceStartFrom > priceRangeMin ? string.Empty : "disabled=disabled")>
+                <input type="hidden" name="to" value="@(priceStartTo < priceRangeMax ? string.Format("{0}", priceStartTo) : "")" @(priceStartTo < priceRangeMax ? string.Empty : "disabled=disabled")>
+                <button type="submit" class="filter-btn">@("PP.Search.Filter".LocalizedString())</button>
+                <a href="@Url.SearchProducts()" class="filter-btn">@("PP.Search.Reset".LocalizedString())</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var rangeSlider = $(".price-range"),
+            minamount = $("#minamount"),
+            maxamount = $("#maxamount");
+
+        $(document).ready(function () {
+            rangeSlider.slider({
+                range: true,
+                min: @(priceRangeMin),
+                max: @(priceRangeMax),
+                values: [@(priceStartFrom), @(priceStartTo)],
+                slide: function (event, ui) {
+                    var minVal = ui.values[0];
+                    minamount.val(@Html.Raw(priceCurrencyFormat.Replace("{price}", isCurrencyFirst ? " + minVal" : "minVal +")));
+
+                    if (minVal > @(priceRangeMin)) {
+                        $("[name=from]").val(minVal);
+                        $("[name=from]").removeAttr("disabled");
+                    } else {
+                        $("[name=from]").val("");
+                        $("[name=from]").attr("disabled", "disabled");
+                    }
+
+                    var maxVal = ui.values[1];
+                    maxamount.val(@Html.Raw(priceCurrencyFormat.Replace("{price}", isCurrencyFirst ? " + maxVal" : "maxVal +")));
+
+                    if (maxVal < @(priceRangeMax)) {
+                        $("[name=to]").val(maxVal);
+                        $("[name=to]").removeAttr("disabled");
+                    } else {
+                        $("[name=to]").val("");
+                        $("[name=to]").attr("disabled", "disabled");
+                    }
+                }
+            });
+
+            minamount.val(@Html.Raw(priceCurrencyFormat.Replace("{price}", isCurrencyFirst ?  " + rangeSlider.slider(\"values\", 0)" : "rangeSlider.slider(\"values\", 0) +")));
+            maxamount.val(@Html.Raw(priceCurrencyFormat.Replace("{price}", isCurrencyFirst ?  " + rangeSlider.slider(\"values\", 1)" : "rangeSlider.slider(\"values\", 1) +")));
+        });
+        
+        $("#priceRangeForm").submit(function (e) {
+            Search();
+
+            e.preventDefault();
+        });
+    </script>
+}

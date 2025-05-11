@@ -1,0 +1,107 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.UsersListingViewModel
+
+@if (Model != null && Model.Users != null && Model.Users.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @("Dashboard.Users.List.RegisteredOn".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Users.List.Name".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Users.List.Username".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Users.List.Email".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Users.List.Roles".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Users.List.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @user.RegisteredOn.ToString().IfNullOrEmptyShowAlternative("-")
+                    </td>
+                    <td>
+                        @user.FullName
+                    </td>
+                    <td>
+                        @user.UserName
+                    </td>
+                    <td>
+                        @user.Email
+                    </td>
+                    <td>
+                        @user.Roles.Count
+                    </td>
+                    <td>
+                        <a href="@Url.UserDetails(user.Id)" class="moreButton btn btn-primary">
+                            <i class="fas fa-user mr-1"></i>
+                            @("Dashboard.Users.List.MoreDetails".Localized())
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Users(Model.SearchTerm, Model.RoleID, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.Users(Model.SearchTerm, Model.RoleID, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Users(Model.SearchTerm, Model.RoleID, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Users.List.NoRecordFound".Localized())
+    </div>
+}

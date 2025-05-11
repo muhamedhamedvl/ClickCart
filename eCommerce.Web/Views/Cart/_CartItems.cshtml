@@ -1,0 +1,225 @@
+﻿@using eCommerce.Entities
+@model eCommerce.Web.ViewModels.CartItemsViewModel
+
+@if (Model != null && Model.Products != null && Model.Products.Count > 0)
+{
+    var promoMessage = string.Empty;
+    var promoAlertClass = "alert-info";
+    var promoAlertStyle = "display:none";
+
+    var subTotalAmount = Model.CartItems.Sum(z => z.ProductTotal);
+    var discount = 0M;
+
+    if (!string.IsNullOrEmpty(Model.PromoCode))
+    {
+        if (Model.Promo != null && Model.Promo.Value > 0)
+        {
+            if (Model.Promo.ValidTill == null || Model.Promo.ValidTill >= DateTime.Now)
+            {
+                if (Model.Promo.PromoType == (int)PromoTypes.Percentage)
+                {
+                    discount = Math.Round((subTotalAmount * Model.Promo.Value) / 100);
+                }
+                else if (Model.Promo.PromoType == (int)PromoTypes.Amount)
+                {
+                    discount = Model.Promo.Value;
+                }
+
+                promoMessage = "PP.Cart.PromoAppliedSuccessfully".LocalizedString().Replace("{discount}", "<div style='display:inline-block' dir=ltr>" + discount.WithCurrency() + "</div>");
+                promoAlertClass = "alert-success";
+                promoAlertStyle = "";
+            }
+            else
+            {
+                promoMessage = "PP.Cart.PromoExpired".LocalizedString();
+                promoAlertClass = "alert-warning";
+                promoAlertStyle = "";
+            }
+        }
+        else
+        {
+            promoMessage = "PP.Cart.InvalidPromo".LocalizedString();
+            promoAlertClass = "alert-danger";
+            promoAlertStyle = "";
+        }
+    }
+
+    var totalAmount = subTotalAmount - discount + ConfigurationsHelper.FlatDeliveryCharges;
+    
+    var IslazyLoadImage = !Request.IsAjaxRequest();
+
+    <form class="cart-form">
+        <div class="cart-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>@("PP.Cart.ItemImage".LocalizedString())</th>
+                        <th class="p-name">@("PP.Cart.ItemName".LocalizedString())</th>
+                        <th>@("PP.Cart.ItemPrice".LocalizedString())</th>
+                        <th>@("PP.Cart.ItemQuantity".LocalizedString())</th>
+                        <th>@("PP.Cart.ItemTotal".LocalizedString())</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cartItem in Model.CartItems)
+                    {
+                        var product = Model.Products.FirstOrDefault(p => p.ID == cartItem.ItemID);
+                        var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                        var thumbnail = PictureHelper.GetProductThumbnail(product.ProductPictures, product.ThumbnailPictureID);
+
+                        var productPrice = product.Discount.HasValue && product.Discount.Value > 0 ? product.Discount.Value : product.Price;
+                        
+                        var sanitizedSEOTitle = AppDataHelper.CurrentLanguage.ShortCode == LanguagesHelper.EnglishLanguageShortCode && currentLanguageProductRecord != null ? currentLanguageProductRecord.Name.SanitizeLowerString() : string.Empty;
+
+                        <tr class="pDetail" data-id="@product.ID" data-container="response-holder">
+                            <td class="cart-pic">
+                                @Html.Thumbnail(picture: thumbnail, targetSize: 190, seoTitle: sanitizedSEOTitle, classes: "m-auto", alt: currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty, lazyLoad: IslazyLoadImage)
+                            </td>
+                            <td class="cart-title">
+                                <a class="text-primary" href="@Url.ProductDetails(category: product.Category.SanitizedName, ID: product.ID)">
+                                    <h5>
+                                        @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                                    </h5>
+                                </a>
+                            </td>
+                            <td class="p-price ltr-dir">
+                                @if (product.Discount.HasValue && product.Discount.Value > 0)
+                                {
+                                    <span>
+                                        @product.Price.WithCurrency()
+                                    </span>
+                                }
+                                @productPrice.WithCurrency()
+                            </td>
+                            <td class="qua-col">
+                                <div class="quantity itemCartHolder">
+                                    <div class="pro-qty">
+                                        <span class="qtybtn dec">-</span>
+                                        <input name="@string.Format("product_{0}", product.ID)" class="qtytxt" type="text" value="@cartItem.Quantity">
+                                        <span class="qtybtn inc">+</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="total-price ltr-dir">
+                                @((productPrice * cartItem.Quantity).WithCurrency())
+                            </td>
+                            <td class="close-td">
+                                <i class="btnRemoveFromCart fas fa-times" title="@("PP.Cart.RemoveItem".LocalizedString())"></i>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="discount-coupon">
+                    <div class="coupon-form">
+                        <input type="text" name="promocode" placeholder="@("PP.Cart.EnterPromoCode".LocalizedString())" value="@Model.PromoCode">
+                        <input type="hidden" id="promoID" value="@(Model.Promo != null ? Model.Promo.ID : 0)">
+                        <button type="submit" class="site-btn coupon-btn">@("PP.Cart.ApplyPromo".LocalizedString())</button>
+                    </div>
+                    <div class="alert @promoAlertClass my-2 rounded-0" role="alert" style="@promoAlertStyle">
+                        @Html.Raw(promoMessage)
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cart-buttons">
+                    <button class="updBtn primary-btn up-cart btn-block" type="submit">@("PP.Cart.UpdateCart".LocalizedString())</button>
+                    <a href="@Url.SearchProducts()" class="primary-btn continue-shop btn-block">@("PP.Cart.ContinueShopping".LocalizedString())</a>
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-2">
+                <div class="proceed-checkout">
+                    <ul>
+                        <li class="subtotal">
+                            @("PP.Cart.SubTotal".LocalizedString())
+                            <span class="ltr-dir">
+                                @subTotalAmount.WithCurrency()
+                            </span>
+                        </li>
+                        <li class="subtotal">
+                            @("PP.Cart.Discount".LocalizedString())
+                            <span class="ltr-dir">
+                                @discount.WithCurrency()
+                            </span>
+                        </li>
+                        <li class="subtotal">
+                            @("PP.Cart.ShippingCharges".LocalizedString())
+                            <span class="ltr-dir">
+                                @ConfigurationsHelper.FlatDeliveryCharges.WithCurrency()
+                            </span>
+                        </li>
+                        <li class="cart-total">
+                            @("PP.Cart.Total".LocalizedString())
+                            <span class="ltr-dir">
+                                @totalAmount.WithCurrency()
+                            </span>
+                        </li>
+                    </ul>
+                    <a href="@Url.Checkout()" class="proceed-btn">@("PP.Cart.ProceedToCheckout".LocalizedString())</a>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        var updateTimeout;
+        function updateCart() {
+            stopUpdateCart();
+
+            updateTimeout = setTimeout(function () {
+                addLoader("response-holder");
+                $.ajax({
+                    url: '@Url.UpdateCart()',
+                    method: 'post',
+                    data: $(".cart-form").serialize()
+                })
+                .done(function (response) {
+                    $("#response-holder").html(response);
+
+                    getCartItems();
+                })
+                .fail(function () {
+                    Swal.fire("@("PP.Message.Error".LocalizedString())", "@("PP.Message.GenericErrorMessage".LocalizedString())", "error");
+
+                    removeLoader("response-holder");
+                });
+            }, 1000);
+        }
+
+        function stopUpdateCart() {
+            clearTimeout(updateTimeout);
+            removeLoader("response-holder");
+        }
+
+
+        $(document).ready(function () {
+            applyQuantityFunctions();
+
+            $(".cart-form").submit(function (e) {
+                updateCart();
+                e.preventDefault();
+            });
+
+            $(".btnRemoveFromCart").click(function () {
+                $(this).parents(".pDetail").remove();
+
+                updateCart();
+            });
+
+            $('.qtybtn', '.cart-form').click(updateCart);
+            $('.qtytxt', '.cart-form').keyup(updateCart);
+        });
+    </script>
+}
+else
+{
+    <div class="alert alert-warning mb-0" role="alert">
+        @("PP.Shopping.NoProductsInCart".LocalizedString())
+    </div>
+}
+

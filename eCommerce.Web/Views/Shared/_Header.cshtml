@@ -1,0 +1,214 @@
+﻿@using Microsoft.AspNet.Identity
+
+    <header class="header-section">
+        <div class="header-top">
+            <div class="container">
+                <div class="ht-left">
+                    @*@if (!string.IsNullOrEmpty(ConfigurationsHelper.Email))
+                    {
+                        <div class="mail-service">
+                            <i class="fas fa-envelope"></i>
+                            <a class="text-dark" href="mailto:@ConfigurationsHelper.Email" target="_blank">
+                                @ConfigurationsHelper.Email
+                            </a>
+                        </div>
+                    }*@
+                    @if (!string.IsNullOrEmpty(ConfigurationsHelper.PhoneNumber))
+                    {
+                        <div class="phone-service">
+                            <i class="fas fa-phone"></i>
+                            <a class="text-dark" href="tell:@ConfigurationsHelper.PhoneNumber" target="_blank">
+                                @ConfigurationsHelper.PhoneNumber
+                            </a>
+                        </div>
+                    }
+                </div>
+                @if (AppDataHelper.IsMobile && !string.IsNullOrEmpty(ConfigurationsHelper.PhoneNumber))
+                {
+                    <div class="d-sm-block d-md-none" style="display:inline-block; margin-top: 6px">
+                        <div class="phone-service">
+                            <i class="fas fa-phone" style="line-height: inherit"></i>
+                            <a class="text-dark" href="tell:@ConfigurationsHelper.PhoneNumber" target="_blank">
+                                @ConfigurationsHelper.PhoneNumber.SafeSubstring(8)
+                            </a>
+                        </div>
+                    </div>
+                }
+                <div class="ht-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        var hiUserMessage = "PP.Header.Menu.HiUser".LocalizedString().Replace("{user}", User.Identity.GetUserName());
+
+                        <div class="login-panel login-panel-last">
+                            <a href="#" id="btnLogOff" title="@("PP.Header.Menu.LogOff".Localized())">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+
+                        if (User.IsInRole("Administrator"))
+                        {
+                            <div class="login-panel">
+                                <a href="@Url.Dashboard()" title="@("PP.Header.Menu.Dashboard".Localized())">
+                                    <i class="fas fa-user-shield"></i>
+                                </a>
+                            </div>
+                        }
+
+                        <div class="login-panel">
+                            <a href="@Url.UserProfile()" title="@hiUserMessage">
+                                @Html.UserAvatar(User.Identity.GetUserPicture(), "image rounded-circle", style: "width: 20px; height: 20px", alt: hiUserMessage)
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="login-panel login-panel-last">
+                            <a href="@Url.Login()" title="@("PP.Header.Menu.Account".Localized())">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        </div>
+                    }
+
+                    @if (ConfigurationsHelper.EnableMultilingual && LanguagesHelper.EnabledLanguages != null && LanguagesHelper.EnabledLanguages.Count > 1)
+                    {
+                        <div class="lan-selector">
+                            <select class="language_drop" name="languages" id="ddlanguages" style="width:@(AppDataHelper.IsMobile ? "70px" : "150px");">
+                                @foreach (var language in LanguagesHelper.EnabledLanguages)
+                                {
+                                    var iconCode = !string.IsNullOrEmpty(language.IconCode) ? language.IconCode : "FLAG.png";
+
+                                    <option value="@Url.LanguageBasedURL(language.ShortCode)"
+                                            data-image="@Html.LanguageIcon(iconCode)"
+                                            data-imagecss="flag yt"
+                                            data-title="@language.Name"
+                                            data-hasResources="true"
+                                            @(language.ShortCode == AppDataHelper.CurrentLanguage.ShortCode ? "selected" : string.Empty)>
+                                        @(AppDataHelper.IsMobile ? string.Empty : language.Name)
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ConfigurationsHelper.FacebookURL) ||
+                        !string.IsNullOrEmpty(ConfigurationsHelper.TwitterURL) ||
+                        !string.IsNullOrEmpty(ConfigurationsHelper.InstagramURL) ||
+                        !string.IsNullOrEmpty(ConfigurationsHelper.LinkedInURL) ||
+                        !string.IsNullOrEmpty(ConfigurationsHelper.WhatsAppNumber))
+                    {
+                        <div class="top-social">
+                            @if (!string.IsNullOrEmpty(ConfigurationsHelper.FacebookURL))
+                            {
+                                <a title="Facebook" href="@ConfigurationsHelper.FacebookURL" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            }
+                            @if (!string.IsNullOrEmpty(ConfigurationsHelper.TwitterURL))
+                            {
+                                <a title="Twitter" href="@ConfigurationsHelper.TwitterURL" target="_blank"><i class="fab fa-twitter"></i></a>
+                            }
+                            @if (!string.IsNullOrEmpty(ConfigurationsHelper.InstagramURL))
+                            {
+                                <a title="Instagram" href="@ConfigurationsHelper.InstagramURL" target="_blank"><i class="fab fa-instagram"></i></a>
+                            }
+                            @if (!string.IsNullOrEmpty(ConfigurationsHelper.LinkedInURL))
+                            {
+                                <a title="LinkedIn" href="@ConfigurationsHelper.LinkedInURL" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                            }
+                            @if (!string.IsNullOrEmpty(ConfigurationsHelper.WhatsAppNumber))
+                            {
+                                <a title="WhatsApp" href="https://wa.me/@ConfigurationsHelper.WhatsAppNumber" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (!LanguagesHelper.LanguagesWithResources.Contains(AppDataHelper.CurrentLanguage) && ConfigurationsHelper.Environment == Environments.DEMO)
+        {
+            <div class="text-center alert alert-danger rounded-0 mb-0" role="alert" dir="ltr">
+                Language text resources are missing for selected language. Please upload Language Pack for this language. See more details <u><a href="https://sajjadarifgul.github.io/eCommerceMVCDocs/faqs.html#How_To_Install_Language_Pack" target="_blank">here <i class="fas fa-external-link-alt mx-1 dont-transform"></i></a></u>.
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        <div class="container">
+            <div class="inner-header">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3">
+                        <div class="logo">
+                            <a href="@Url.Home()">
+                                <h4>
+                                    @* TODO: We should be able to localize the application name along with Logo *@
+                                    @ConfigurationsHelper.ApplicationName
+                                </h4>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <form class="advanced-search" action="@Url.SearchProducts()">
+                            <div class="input-group">
+                                <input type="text" name="q" placeholder="@("PP.Header.SearchPlaceholder".Localized())" value="@(ViewBag.SearchTerm)" required>
+                                <button type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="cart-info" class="col-lg-3 col-md-3">
+                        <ul class="nav-right">
+                            <li class="cart-icon cartMenu">
+                                <span class="pointerCursor">
+                                    <a>
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span class="countholder">0</span>
+                                    </a>
+                                    <span class="cart-price ltr-dir" dir="ltr"></span>
+                                </span>
+                                <div class="cart-hover">
+                                    <div class="cart-items-modal"></div>
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border my-5 bloader" role="status" style="display:none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="container">
+                @{ Html.RenderAction("CategoriesMenu", "Categories"); }
+                <nav class="nav-menu mobile-menu">
+                    <ul>
+                        <li class="@Html.MenuItemClass("Home", "Index")"><a href="@Url.Home()">@("PP.Header.Menu.Home".Localized())</a></li>
+                        <li class="@Html.MenuItemClass("Home", "Search")"><a href="@Url.SearchProducts()">@("PP.Header.Menu.Products".Localized())</a></li>
+                        <li class="@Html.MenuItemClass("Orders", "Tracking")"><a href="@Url.OrderTrack()">@("PP.Header.Menu.Tracking".Localized())</a></li>
+                        <li class="@Html.MenuItemClass("Cart", "Cart")"><a href="@Url.Cart()">@("PP.Header.Menu.ShoppingCart".Localized())</a></li>
+                        <li class="@Html.MenuItemClass("Cart", "Checkout")"><a href="@Url.Checkout()">@("PP.Header.Menu.Checkout".Localized())</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-nav-holder">
+                    <div id="mobile-menu-wrap" style="float:@(AppDataHelper.IsRTL ? "left" : "right");"></div>
+                    <div id="categories-menu-wrap" style="float:@(AppDataHelper.IsRTL ? "left" : "right");"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<div style="display:none">
+    @{ Html.RenderAction("CategoriesMenuForMobile", "Categories"); }
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <form id="logOffForm" method="post" action="@Url.Logoff()">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <script>
+        $("#btnLogOff").click(function () {
+            $("#logOffForm").submit();
+        });
+    </script>
+}

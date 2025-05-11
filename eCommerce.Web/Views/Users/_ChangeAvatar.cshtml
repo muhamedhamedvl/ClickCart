@@ -1,0 +1,115 @@
+﻿@model eCommerce.Web.ViewModels.ProfileDetailsViewModel
+
+@if (Model != null && Model.User != null)
+{
+    <form id="frmUserAvatar">
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.ChangeAvatar.Avatar".Localized())</label>
+            <div id="pictureArea" class="col-sm-9">
+                @Html.UserAvatar(Model.User.Picture, "image img-thumbnail", "width: 100%", lazyLoad: false)
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.ChangeAvatar.SelectAvatar".Localized())</label>
+            <div class="col-sm-9">
+                <input id="avatarPicture" class="form-control" type="file" />
+                <input type="hidden" name="PictureID" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="offset-sm-3 col-sm-9">
+                <button id="btnUpdate" type="button" class="btn btn-success"><i class="fas fa-edit mr-1"></i> @("PP.UserProfile.ChangeAvatar.UpdateAvatar".Localized())</button>
+            </div>
+        </div>
+    </form>
+}
+
+<div id="avatarTemplate" style="display:none">
+    @Html.UserAvatar(new eCommerce.Entities.Picture(), "image img-thumbnail", "width: 100%", lazyLoad: false)
+</div>
+
+<script>
+    $("#btnUpdate").click(function () {
+
+        if ($("[name=PictureID]").val() != "") {
+                addLoader("response-holder");
+
+		    $.ajax({
+		    	url: "@Url.UpdateAvatar()",
+		    	method: "post",
+                   data: $("#frmUserAvatar").serialize()
+		    })
+		    .done(function (response) {
+                removeLoader("response-holder");
+
+		    	if (response.Success) {
+                     Swal.fire("@("PP.Message.Success".Localized())", "@("PP.UserProfile.ChangeAvatar.AvatarUpdated".Localized())", "success")
+                        .then((ok) => {
+                            window.location.reload();
+			            });
+		    	}
+		    	else {
+                        Swal.fire("@("PP.Message.Error".Localized())", response.Message, "error");
+		    	}
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                removeLoader("response-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+        }
+        else {
+            swal("Error!", "@("PP.UserProfile.ChangeAvatar.Validations.SelectAvatar".Localized())", "error");
+        }
+    });
+
+    $("#avatarPicture").change(function () {
+                addLoader("response-holder");
+
+		var pictures = this.files;
+
+		var picsData = new FormData();
+
+		for (var i = 0; i < pictures.length; i++) {
+			picsData.append("Picture", pictures[i]);
+		}
+
+		$.ajax({
+			url: "@Url.UploadPictures()",
+			type: "post",
+			data: picsData,
+			dateType: "json",
+			processData: false,
+			contentType: false
+		})
+        .done(function (responses) {
+                removeLoader("response-holder");
+            if (responses != undefined) {
+                var picResponse = responses[0];
+                AttachNewImage(picResponse.pictureURL, picResponse.ID);
+            }
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+                removeLoader("response-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+    });
+
+    function AttachNewImage(imageURL, imageID) {
+        var $newimgHTML = $("#avatarTemplate").clone();
+
+        $newimgHTML.find(".image").attr("src", "/content/images/" + imageURL);
+        $newimgHTML.find(".image").attr("data-id", imageID);
+
+        $("input[name=PictureID]").val(imageID);
+
+        $("#pictureArea").html($newimgHTML.html());
+    }
+</script>

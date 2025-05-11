@@ -1,0 +1,38 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+@{
+    var baseModel = Model;
+
+    if (baseModel == null)
+    {
+        baseModel = new eCommerce.Web.ViewModels.PageViewModel();
+    }
+}
+
+<!DOCTYPE html>
+<html lang="@AppDataHelper.CurrentLanguage.ShortCode.ToLower()" @(AppDataHelper.IsRTL ? "dir=rtl" : string.Empty)>
+<head>
+    @Html.Partial("_MetaTags", baseModel)
+    @Html.Partial("_HeaderStylesScripts", baseModel)
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        @Html.Partial("_SidebarMenu")
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                @Html.Partial("_TopbarMenu")
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+            @Html.Partial("_Footer", baseModel)
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    @Html.Partial("_FooterStylesScripts", baseModel)
+</body>
+</html>

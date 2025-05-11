@@ -1,0 +1,72 @@
+﻿@model eCommerce.Web.ViewModels.ProductsByFeaturedCategoriesViewModel
+
+@if (Model != null && Model.Categories != null && Model.Categories.Count > 0)
+{
+    var reverse = false;
+
+    foreach (var featuredCategory in Model.Categories)
+    {
+        var currentLanguageCategoryRecord = featuredCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+        var products = featuredCategory.Products != null ? featuredCategory.Products.Where(x => !x.IsDeleted && x.IsActive).OrderByDescending(x => x.ModifiedOn).Take(8).ToList() : null;
+
+        <section class="@(reverse ? "reverse-banner" : "forward-banner") spad">
+            <div class="container-fluid px-0">
+                <div class="row">
+                    @if (reverse)
+                    {
+                        <div class="col-lg-8">
+                            @if (products != null && products.Count > 0)
+                            {
+                                Html.RenderPartial("_ProductsSlider", products);
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning m-0" role="alert">
+                                    @("PP.Search.ProductsNotFound".Localized())
+                                </div>
+                            }
+                        </div>
+                        <div class="col-lg-4" title="@("PP.Home.FeaturedCategories.BrowseCategoryProducts".LocalizedString().Replace("{category}", currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : null))">
+                            <div class="product-large set-bg d-flex justify-content-center align-items-center" data-setbg="@Html.PictureSource(picture: featuredCategory.Picture, defaultPic: "site/default-bg.jpg")">
+                                <div>
+                                    <h2>
+                                        @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                                    </h2>
+                                    <a href="@Url.SearchProducts(category:featuredCategory.SanitizedName)">@("PP.Home.FeaturedCategories.DiscoverMoreProducts".Localized())</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-lg-4" title="@("PP.Home.FeaturedCategories.BrowseCategoryProducts".LocalizedString().Replace("{category}", currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty))">
+                            <div class="product-large set-bg d-flex justify-content-center align-items-center" data-setbg="@Html.PictureSource(picture: featuredCategory.Picture, defaultPic: "site/default-bg.jpg")">
+                                <div>
+                                    <h2>
+                                        @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                                    </h2>
+                                    <a href="@Url.SearchProducts(category:featuredCategory.SanitizedName)">@("PP.Home.FeaturedCategories.DiscoverMoreProducts".Localized())</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            @if (products != null && products.Count > 0)
+                            {
+                                Html.RenderPartial("_ProductsSlider", products);
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning m-0" role="alert">
+                                    @("PP.Search.ProductsNotFound".Localized())
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        reverse = !reverse;
+    }
+}

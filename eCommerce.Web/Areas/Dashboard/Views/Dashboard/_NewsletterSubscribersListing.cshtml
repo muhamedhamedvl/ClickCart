@@ -1,0 +1,96 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.NewsletterSubscribersListingViewModel
+
+@if (Model.NewsletterSubscribers != null && Model.NewsletterSubscribers.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th width="50%">
+                    @("Dashboard.NewsletterSubscribers.List.Email".Localized())
+                </th>
+                <th width="35%">
+                    @("Dashboard.NewsletterSubscribers.List.UserID".Localized())
+                </th>
+                <th width="15%">
+                    @("Dashboard.NewsletterSubscribers.List.IsVerified".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var newsletterSubscriber in Model.NewsletterSubscribers)
+            {
+                <tr>
+                    <td>
+                        @newsletterSubscriber.EmailAddress
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(newsletterSubscriber.UserID))
+                        {
+                            <a href="@Url.UserDetails(newsletterSubscriber.UserID)">
+                                @newsletterSubscriber.UserID.IfNullOrEmptyShowAlternative("-")
+                            </a>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                    <td>
+                        @newsletterSubscriber.IsVerified
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.NewsletterSubscribers(Model.SearchTerm, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.NewsletterSubscribers(Model.SearchTerm, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.NewsletterSubscribers(Model.SearchTerm, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.NewsletterSubscribers.NoRecordFound".Localized())
+    </div>
+}

@@ -1,0 +1,48 @@
+﻿<script>
+    $(function () {
+        $('img').Lazy({
+            scrollDirection: 'vertical',
+            effect: 'fadeIn',
+            visibleOnly: false,
+            onError: function (element) {
+                console.log('error loading ' + element.data('src'));
+            },
+            onFinishedAll: function () {
+                console.log('all images loaded')
+            }
+        });
+    });
+</script>
+
+<!-- Font Awesome -->
+<link data-link data-href="/content/lib/fontawesome-free-5.13.0-web/css/all.min.css" rel="stylesheet" />
+
+@if (AppDataHelper.IsRTL)
+{
+    <link data-link data-href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    @Scripts.Render("~/bundles/content/rtl/fscripts")
+}
+else
+{
+    <link data-link data-href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+    @Scripts.Render("~/bundles/content/fscripts")
+}
+
+<script>
+    $(document).ready(function () {
+        $.each($("[data-link]"), function () { $(this).attr("href", $(this).attr("data-href")); $(this).removeAttr("data-href") });
+    });
+</script>
+
+<div id="google-facebook-scripts"></div>
+
+@if (!string.IsNullOrEmpty(ConfigurationsHelper.WhatsAppNumber))
+{
+    <a href="https://wa.me/@ConfigurationsHelper.WhatsAppNumber" class="whatsapp-floater" target="_blank">
+        <i class="fab fa-whatsapp whatsapp-float-icon"></i>
+    </a>
+}
+
+<a id="changeMode" class="pointerCursor mode-floater" title="@(SessionHelper.DarkMode.Equals("true") ? ("PP.Header.Menu.DisableDarkMode".Localized()) : ("PP.Header.Menu.EnableDarkMode".Localized()))">
+    <i class="fas fa-adjust mode-float-icon"></i>
+</a>

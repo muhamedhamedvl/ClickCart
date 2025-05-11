@@ -1,0 +1,152 @@
+﻿@model eCommerce.Web.ViewModels.CommentsListingViewModel
+
+@if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+{
+    <div class="container">
+        @foreach (var comment in Model.Comments)
+        {
+            var defaultStars = ConfigurationsHelper.DefaultRating - comment.Rating;
+
+            var commentedProduct = Model.CommentedProducts != null ? Model.CommentedProducts.FirstOrDefault(x => x.ID == comment.RecordID) : null;
+
+            <div class="row py-2 border-bottom">
+                <div class="col-xs-1 col-md-1 col-lg-1 p-0">
+                    @Html.UserAvatar(comment.User.Picture, "img-responsive img-thumbnail", alt: comment.User.UserName, lazyLoad: false)
+                </div>
+                <div class="col-xs-11 col-md-11 col-lg-11">
+                    <div class="mb-2">
+                        <div class="mic-info">
+                            <a href="@Url.UserDetails(comment.UserID)">
+                                @("Dashboard.Comments.CommentUserName".LocalizedString().Replace("{user}", comment.User.FullName).Trim())
+                            </a>
+                            <span class="small ml-2 text-muted">
+                                @("Dashboard.Comments.CommentTimestamp".LocalizedString().Replace("{datetime}", comment.TimeStamp.ToString()))
+                            </span>
+                        </div>
+                        @if (commentedProduct != null && commentedProduct.ProductRecords != null && commentedProduct.ProductRecords.Count > 0)
+                        {
+                            var currentLanguageProductRecord = commentedProduct.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            <a class="text-primary" href="@Url.ProductDetails(category: commentedProduct.Category.SanitizedName, ID: commentedProduct.ID)" target="_blank">
+                                @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                            </a>
+                        }
+                        else
+                        {
+                            <i>@("Dashboard.Comments.ProductDeleted".LocalizedString())</i>
+                        }
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="mr-auto text-warning">
+                            @for (int i = 1; i <= comment.Rating; i++)
+                            {
+                                <i class="fas fa-star"></i>
+                            }
+
+                            @for (int i = 1; i <= defaultStars; i++)
+                            {
+                                <i class="far fa-star"></i>
+                            }
+                        </div>
+                        <div class="ml-auto text-danger pointerCursor">
+                            <i class="fas fa-trash-alt deleteButton" title="@("Dashboard.Comments.DeleteComment".Localized())" data-id="@comment.ID"></i>
+                        </div>
+                    </div>
+                    <div class="comment-text">
+                        @comment.Text
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Pager != null && Model.Pager.TotalPages > 1)
+        {
+            <nav class="mt-2">
+                <ul class="pagination justify-content-center">
+
+                    @if (Model.Pager.CurrentPage == 1)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Comments(Model.SearchTerm, pageNo: Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                        </li>
+                    }
+
+                    @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                    {
+                        var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                        <li class="page-item @active">
+                            <a class="page-link" href="@Url.Comments(Model.SearchTerm, pageNo: page)">
+                                @page
+                            </a>
+                        </li>
+                    }
+
+                    @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Comments(Model.SearchTerm, pageNo: Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Comments.List.NoRecordFound".Localized())
+    </div>
+}
+
+<script>
+    $(".deleteButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+            cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("list-holder");
+       		    $.ajax({
+       		    	url: "@Url.DeleteAction("Comments")",
+                    type: "post",
+                    data: { id: recordID }
+       		    })
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+                        window.location.href = "@Url.ListAction("Comments")";
+       		        }
+                    else {
+                        removeLoader("list-holder");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+       		        }
+       		    })
+                .fail(function () {
+                    removeLoader("list-holder");
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	        });
+            }
+        });
+    });
+</script>

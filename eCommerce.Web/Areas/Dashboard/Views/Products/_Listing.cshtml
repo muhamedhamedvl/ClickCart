@@ -1,0 +1,188 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.ProductsListingViewModel
+
+@if (Model != null && Model.Products != null && Model.Products.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @("Dashboard.Products.List.Name".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Products.List.Category".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Products.List.Summary".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Products.List.Price".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Products.List.StockQuantity".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Products.List.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Products)
+            {
+                var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                var doesntExistsInCurrentLanguage = currentLanguageProductRecord == null;
+
+                <tr>
+                    <td>
+                        @if (doesntExistsInCurrentLanguage)
+                        {
+                            <i class="text-danger fas fa-exclamation-triangle" title="@("Dashboard.Commons.RecordNotSpecifiedInCurrentLanguage".Localized())"></i>
+                        }
+
+                        @if (product.isFeatured)
+                        {
+                            <i class="text-warning fas fa-star m-1" title="@("Dashboard.Products.List.FeaturedProduct".Localized())"></i>
+                        }
+
+                        @if (!product.IsActive)
+                        {
+                            <i class="text-warning fas fa-eye-slash m-1" title="@("Dashboard.Products.List.InActive".Localized())"></i>
+                        }
+
+                        <a href="@Url.ProductDetails(product.Category.SanitizedName, product.ID)" target="_blank">
+                            @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                        </a>
+                    </td>
+                    <td>
+                        @{
+                            var currentLanguageCategoryRecord = product.Category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            if (currentLanguageCategoryRecord == null)
+                            {
+                                <i class="text-danger fas fa-exclamation-triangle" title="@("Dashboard.Commons.CategoryRecordNotSpecifiedInCurrentLanguage".Localized())"></i>
+                            }
+                            else
+                            {
+                                <span>
+                                    <a href="@Url.Products(categoryID: product.CategoryID)">
+                                        @currentLanguageCategoryRecord.Name
+                                    </a>
+                                </span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Summary.IfNullOrEmptyShowAlternative("-") : string.Empty)
+                    </td>
+                    <td>
+                        @product.Price.WithCurrency()
+                    </td>
+                    <td>
+                        @product.StockQuantity
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-primary" href="@Url.EditAction("Products", product.ID)">
+                                <i class="fas fa-edit mr-1"></i>
+                                @("Dashboard.Products.Edit".Localized())
+                            </a>
+                            <button class="deleteButton btn btn-danger" data-id="@product.ID">
+                                <i class="fas fa-trash-alt mr-1"></i>
+                                @("Dashboard.Products.Delete".Localized())
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Products(Model.SearchTerm, Model.Pager.CurrentPage - 1, Model.CategoryID, showOnlyLowStock: Model.ShowOnlyLowStock)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.Products(Model.SearchTerm, page, Model.CategoryID, showOnlyLowStock: Model.ShowOnlyLowStock)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Products(Model.SearchTerm, Model.Pager.CurrentPage + 1, Model.CategoryID, showOnlyLowStock: Model.ShowOnlyLowStock)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+    <script>
+        $(".deleteButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+            cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("list-holder");
+				$.ajax({
+					url: "@Url.DeleteAction("Products")",
+                    type: "post",
+                    data: { id: recordID }
+				})
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+                        window.location.href = "@Url.ListAction("Products")";
+				    }
+                    else {
+                        removeLoader("list-holder");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+				    }
+				})
+                .fail(function () {
+                     removeLoader("list-holder");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			    });
+            }
+        });
+    });
+    </script>
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Products.List.NoRecordFound".Localized())
+    </div>
+}

@@ -1,0 +1,31 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.OrderDetailsViewModel
+
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.OrderDetails.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.OrderDetails.Description".LocalizedString();
+        Model.PageURL = Url.DetailsAction("Orders", Model.Order.ID);
+        Model.PageImageURL = PictureHelper.PageImageURL("orders.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <a class="btn btn-success" href="@Url.PrintInvoice(Model.Order.ID)" target="_blank">
+        <i class="fas fa-print mr-1"></i>
+        @("Dashboard.OrderDetails.PrintInvoice".Localized())
+    </a>
+    <hr />
+</div>
+
+<div class="page-data-holder mb-4">
+    @{
+        Html.RenderPartial("_Details", Model);
+    }
+</div>

@@ -1,0 +1,18 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared
+@model eCommerce.Web.ViewModels.ProductsViewModel
+
+@if (Model != null)
+{
+    <div class="filter-widget">
+        <h4 class="fw-title">@("PP.Search.SearchProducts".LocalizedString())</h4>
+        <form class="advanced-search" action="@Url.SearchProducts()">
+            <div class="input-group">
+                <input type="text" name="q" placeholder="@("PP.Search.SearchProductsPlaceholder".LocalizedString())" value="@Model.SearchTerm" required>
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+}

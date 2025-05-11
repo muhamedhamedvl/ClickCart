@@ -1,0 +1,458 @@
+﻿@model eCommerce.Web.ViewModels.CheckoutViewModel
+@{
+    var currentDate = DateTime.Now;
+}
+
+<div class="accordion" id="paymentOptions">
+    @if (ConfigurationsHelper.EnableCreditCardPayment)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <span class="btn btn-link collapsed" data-toggle="collapse" data-target="#creditCardsContainer" aria-expanded="false">
+                        @("PP.Checkout.PayViaCreditCard".LocalizedString())
+                    </span>
+                    <i class="fas fa-credit-card text-success"></i>
+                </h2>
+            </div>
+            <div id="creditCardsContainer" class="collapse" data-parent="#paymentOptions" style="">
+                <div class="card-body">
+                    @if (ConfigurationsHelper.Environment == Environments.DEMO)
+                    {
+                        var expirydate = DateTime.Now.AddMonths(6);
+
+                        <div class="alert alert-warning my-2 rounded-0" role="alert">
+                            You are browsing DEMO website. Use the following Card Information to Place order for testing purposes. Orders will not be delivered.
+                            <br />
+                            <br />
+                            Card Holder Name: Test Man
+                            <br />
+                            Card Number: 4111 1111 1111 1111
+                            <br />
+                            Card Expiry: @expirydate.ToString("MM")/@expirydate.ToString("yy")
+                            <br />
+                            CVC: 123
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    <form id="creditCardForm" class="form" role="form" autocomplete="off" method="post">
+                        <div class="form-group">
+                            <label for="CCName">
+                                @("PP.Checkout.CardHolderName".LocalizedString())
+                            </label>
+                            <input type="text" class="form-control" id="CCName" name="CCName" pattern="\w+ \w+.*" title="@("PP.Checkout.CardHolderName".LocalizedString())" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="CCCardNumber">
+                                @("PP.Checkout.CardNumber".LocalizedString())
+                            </label>
+                            <div class="row cardnum-container">
+                                <div class="col-3">
+                                    <input type="text" class="form-control cardnum" id="CCCardNumber1" name="CCCardNum1" autocomplete="off" maxlength="4" title="@("PP.Checkout.CardNumber".LocalizedString())" required>
+                                </div>
+                                <div class="col-3">
+                                    <input type="text" class="form-control cardnum" id="CCCardNumber2" name="CCCardNum2" autocomplete="off" maxlength="4" title="@("PP.Checkout.CardNumber".LocalizedString())" required>
+                                </div>
+                                <div class="col-3">
+                                    <input type="text" class="form-control cardnum" id="CCCardNumber3" name="CCCardNum3" autocomplete="off" maxlength="4" title="@("PP.Checkout.CardNumber".LocalizedString())" required>
+                                </div>
+                                <div class="col-3">
+                                    <input type="text" class="form-control cardnum" id="CCCardNumber4" name="CCCardNum4" autocomplete="off" maxlength="4" title="@("PP.Checkout.CardNumber".LocalizedString())" required>
+                                </div>
+                                <input type="hidden" name="CCCardNumber" class="joined-card-number" />
+                            </div>
+                            <div class="card-number-errors"></div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-12">
+                                @("PP.Checkout.CardExpiryDate".LocalizedString())
+                            </label>
+                            <div class="col-md-4">
+                                <select class="form-control" name="CCExpiryMonth" id="CCExpiryMonth" title="@("PP.Checkout.CardExpiryMonth".LocalizedString())" style="border: 2px solid #ebebeb; height:46px;">
+                                    <option value="01" @(currentDate.Month == 1 ? "selected" : string.Empty)>01</option>
+                                    <option value="02" @(currentDate.Month == 2 ? "selected" : string.Empty)>02</option>
+                                    <option value="03" @(currentDate.Month == 3 ? "selected" : string.Empty)>03</option>
+                                    <option value="04" @(currentDate.Month == 4 ? "selected" : string.Empty)>04</option>
+                                    <option value="05" @(currentDate.Month == 5 ? "selected" : string.Empty)>05</option>
+                                    <option value="06" @(currentDate.Month == 6 ? "selected" : string.Empty)>06</option>
+                                    <option value="07" @(currentDate.Month == 7 ? "selected" : string.Empty)>07</option>
+                                    <option value="08" @(currentDate.Month == 8 ? "selected" : string.Empty)>08</option>
+                                    <option value="09" @(currentDate.Month == 9 ? "selected" : string.Empty)>09</option>
+                                    <option value="10" @(currentDate.Month == 10 ? "selected" : string.Empty)>10</option>
+                                    <option value="11" @(currentDate.Month == 11 ? "selected" : string.Empty)>11</option>
+                                    <option value="12" @(currentDate.Month == 12 ? "selected" : string.Empty)>12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control" name="CCExpiryYear" id="CCExpiryYear" title="@("PP.Checkout.CardExpiryYear".LocalizedString())" style="border: 2px solid #ebebeb; height:46px;">
+                                    @for (int i = currentDate.Year; i < currentDate.Year + 10; i++)
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="CCCVC" id="CCCVC" autocomplete="off" maxlength="3" pattern="\d{3}" title="@("PP.Checkout.CardCVC".LocalizedString())" required="" placeholder="@("PP.Checkout.CardCVC".LocalizedString())">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                            <label class="col-md-12">
+                                <div class="small">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    @("PP.Checkout.CardInfoNotSaved".LocalizedString())
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-group row mb-0">
+                            <div class="col-md-12">
+                                <button type="button" id="submitCreditCard" class="site-btn place-btn btn-lg btn-block">
+                                    @("PP.Checkout.CardPayNow".LocalizedString())
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ConfigurationsHelper.EnableCashOnDeliveryMethod)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#cashOnDeliveryContainer" aria-expanded="false">
+                        @("PP.Checkout.PayViaCashOnDelivery".LocalizedString())
+                    </button>
+                    <i class="fas fa-wallet text-info"></i>
+                </h2>
+            </div>
+            <div id="cashOnDeliveryContainer" class="collapse" data-parent="#paymentOptions" style="">
+                <div class="card-body">
+                    <button type="button" id="submitCashOnDelivery" class="site-btn place-btn btn-lg btn-block">
+                        @("PP.Checkout.PlaceOrder".LocalizedString())
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    @if (ConfigurationsHelper.EnablePayPalPaymentMethod && !string.IsNullOrEmpty(ConfigurationsHelper.PayPalClientID))
+    {
+        //change this currency symbol based on your store currency. Please check with PayPal supported currency symbols.
+        //here is the list of PayPal supported currencies = https://developer.paypal.com/docs/api/reference/currency-codes/
+        var paypalCurrencySymbol = "USD";
+
+        //model.final amount is the amount that is calculated from product prices and shipping charges etc. This is not converted to any currency.
+        // if you are using any currency other than USD and paypal doesn't support it, you should convert this amount to USD below.
+        var amount = Model.FinalAmount;
+
+        //paypal checkout only allows amount with 2 decimal points.
+        var paypalAmount = amount.ToDecimalWithPoints(2);
+
+        <script>
+            $(document).ready(function () {
+                $("[paypal-script]").attr("src", $("[paypal-script]").attr("data-src"));
+             });
+
+            function paypalLoaded() {
+                paypal.Buttons({
+                    onClick: function(data, actions) {
+                        if ($("#contactDetailsForm").valid() && $("#shippingDetailsForm").valid()) {
+                            return actions.resolve();
+                        }
+                        else {
+                            $("#contactDetailsForm").valid();
+                            $("#shippingDetailsForm").valid();
+                            Swal.fire("@("PP.Message.Warning".LocalizedString())", "@("PP.Checkout.Validations.PleaseCompleteRequiredFields".LocalizedString())", "warning");
+                            return actions.reject();
+                        }
+                    },
+                    createOrder: function (data, actions) {
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    value: '@paypalAmount',
+                                    currency_code: '@paypalCurrencySymbol',
+                                    breakdown: {
+                                        item_total: {value: '@paypalAmount', currency_code: '@paypalCurrencySymbol'}
+                                    }
+                                }
+                            }]
+                        });
+                    },
+                    onApprove: function (data, actions) {
+                        addLoader("paypalHolder");
+                        return actions.order.capture().then(function (details) {
+                            removeLoader("paypalHolder");
+                            paypalOrderDetails = details;
+                            submitOrderFormViaPayPal();
+                            console.log(details);
+                        });
+                    }
+                }).render('#paypalHolder');
+            }
+        </script>
+
+        <script data-src="@string.Format("https://www.paypal.com/sdk/js?client-id={0}", ConfigurationsHelper.PayPalClientID)" onload="paypalLoaded()" paypal-script></script>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#paypalContainer" aria-expanded="false">
+                        @("PP.Checkout.PayViaPayPal".Localized())
+                    </button>
+                    <i class="fab fa-paypal text-primary"></i>
+                </h2>
+            </div>
+            <div id="paypalContainer" class="collapse" data-parent="#paymentOptions" style="">
+                <div class="card-body">
+                    <div class="paypal-payment-info alert alert-success" role="alert">
+                        @("PP.Checkout.PayPalAmountNote".LocalizedString().Replace("{amount}", paypalAmount).Replace("{currency}", paypalCurrencySymbol))                        
+                    </div>
+                    <div id="paypalHolder"></div>
+                    <div id="paypalErrorHolder" style="display:none">
+                        <div class="error-message alert alert-danger" role="alert">                            
+                        </div>
+                        <button type="button" id="submitPayPalConfirm" class="site-btn place-btn btn-lg btn-block">
+                            @("PP.Checkout.PayPal.ConfirmOrder".LocalizedString())
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>   
+    $("#creditCardForm").validate({
+        errorClass: "alert alert-danger mb-0 rounded-0",
+        errorElement: "div",
+        rules: {
+            CCName: {
+                required: true,
+            },
+            CCCardNum1: {
+                required: true,
+                number: true,
+                minlength: 4,
+                maxlength: 4
+            },
+            CCCardNum2: {
+                required: true,
+                number: true,
+                minlength: 4,
+                maxlength: 4
+            },
+            CCCardNum3: {
+                required: true,
+                number: true,
+                minlength: 4,
+                maxlength: 4
+            },
+            CCCardNum4: {
+                required: true,
+                number: true,
+                minlength: 4,
+                maxlength: 4
+            },
+            CCExpiryMonth: {
+                required: true,
+            },
+            CCExpiryYear: {
+                required: true,
+            },
+            CCCVC: {
+                required: true,
+                number: true
+            },
+        },
+        messages: {
+            CCName: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardHolderNameRequired".LocalizedString())"
+            },
+            CCCardNum1: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardNumberRequired".LocalizedString())",
+                number: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                minlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                maxlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())"
+            },
+            CCCardNum2: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardNumberRequired".LocalizedString())",
+                number: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                minlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                maxlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())"
+            },
+            CCCardNum3: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardNumberRequired".LocalizedString())",
+                number: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                minlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                maxlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())"
+            },
+            CCCardNum4: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardNumberRequired".LocalizedString())",
+                number: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                minlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())",
+                maxlength: "@("PP.Checkout.CreditCard.Validations.CardNumberMustBeValid".LocalizedString())"
+            },
+            CCExpiryMonth: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardExpiryMonthRequired".LocalizedString())",
+            },
+            CCExpiryYear: {
+                required: "@("PP.Checkout.CreditCard.Validations.CardExpiryYearRequired".LocalizedString())",
+            },
+            CCCVC: {
+                required: "@("PP.Checkout.CreditCard.Validations.CVCRequired".LocalizedString())",
+                number: "@("PP.Checkout.CreditCard.Validations.CVCMustBeValid".LocalizedString())"
+            },
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        },
+        errorPlacement: function (error, element) {
+            if (element.hasClass('cardnum')) {
+                    $(".card-number-errors").html(error);
+            }else{
+          	    error.insertAfter( element );
+            }
+        }
+    });
+
+    $("#submitCreditCard").click(submitOrderFormViaCreditCard);
+    $("#submitCashOnDelivery").click(submitOrderFormViaCashOnDelivery);
+    $("#submitPayPalConfirm").click(submitOrderFormViaPayPal);
+
+    function submitOrderFormViaCreditCard() {
+        $("[name=CCCardNumber]").val($("#CCCardNumber1").val() + $("#CCCardNumber2").val() + $("#CCCardNumber3").val() + $("#CCCardNumber4").val());
+
+        if ($("#contactDetailsForm").valid() && $("#shippingDetailsForm").valid() && $("#creditCardForm").valid()) {
+            addLoader("checkout-holder");
+            $.ajax({
+                url: '@Url.PlaceOrder()',
+                type: "POST",
+                data: $("#contactDetailsForm").serialize() + "&" + $("#shippingDetailsForm").serialize() + "&" + $("#creditCardForm").serialize()
+            })
+            .done(function (response) {
+                removeLoader("checkout-holder");
+                if (response.Success) {
+                    Swal.fire("@("PP.Message.Thanks".LocalizedString())", "@("PP.Checkout.OrderPlacedSuccessfully".LocalizedString())", "success")
+                        .then((value) => {
+                            window.location.href = "@Url.OrderTrack(orderPlaced:true)" + "&orderid=" + response.OrderID;
+                        });
+                }
+                else {
+                    Swal.fire("@("PP.Message.Error".LocalizedString())", response.Message, "error");
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("checkout-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+        }
+        else {
+            $("#contactDetailsForm").valid();
+            $("#shippingDetailsForm").valid();
+            $("#creditCardForm").valid();
+
+            Swal.fire("@("PP.Message.Warning".LocalizedString())", "@("PP.Checkout.Validations.PleaseCompleteRequiredFields".LocalizedString())", "warning");
+        }
+    }
+
+    function submitOrderFormViaCashOnDelivery() {
+        if ($("#contactDetailsForm").valid() && $("#shippingDetailsForm").valid()) {
+            addLoader("checkout-holder");
+            $.ajax({
+                url: '@Url.PlaceOrder(isCashOnDelivery:true)',
+                type: "POST",
+                data: $("#contactDetailsForm").serialize() + "&" + $("#shippingDetailsForm").serialize()
+            })
+            .done(function (response) {
+                removeLoader("checkout-holder");
+                if (response.Success) {
+                    Swal.fire("@("PP.Message.Thanks".LocalizedString())", "@("PP.Checkout.OrderPlacedSuccessfully".LocalizedString())", "success")
+                        .then((value) => {
+                            window.location.href = "@Url.OrderTrack(orderPlaced:true)" + "&orderid=" + response.OrderID;
+                        });
+                }
+                else {
+                    Swal.fire("@("PP.Message.Error".LocalizedString())", response.Message, "error");
+                }
+            })
+             .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("checkout-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+        }
+        else {
+            $("#contactDetailsForm").valid();
+            $("#shippingDetailsForm").valid();
+
+            Swal.fire("@("PP.Message.Warning".LocalizedString())", "@("PP.Checkout.Validations.PleaseCompleteRequiredFields".LocalizedString())", "warning");
+        }
+    }
+
+    var paypalOrderDetails;
+    function submitOrderFormViaPayPal() {        
+        $(".error-message", "#paypalErrorHolder").html("");
+
+        var transactionID, accountName, accountEmail;
+
+        if (paypalOrderDetails) {
+            transactionID = paypalOrderDetails.id;
+            accountName = paypalOrderDetails.payer.name.given_name + ' ' + paypalOrderDetails.payer.name.surname;
+            accountEmail = paypalOrderDetails.payer.email_address;
+        }
+
+        if (transactionID && accountName && accountEmail) {
+            addLoader("checkout-holder");
+            $.ajax({
+                url: '@Url.PlaceOrder(isPayPal:true)',
+                type: "POST",
+                data: $("#contactDetailsForm").serialize() + "&" + $("#shippingDetailsForm").serialize() + "&transactionID=" + transactionID + "&accountName=" + accountName + "&accountEmail=" + accountEmail
+            })
+            .done(function (response) {
+                removeLoader("checkout-holder");
+                if (response.Success) {
+                    Swal.fire("@("PP.Message.Thanks".LocalizedString())", "@("PP.Checkout.OrderPlacedSuccessfully".LocalizedString())", "success")
+                        .then((value) => {
+                            window.location.href = "@Url.OrderTrack(orderPlaced:true)" + "&orderid=" + response.OrderID;
+                        });
+                }
+                else {
+                    //paypal payment has been completed, there is error on our side so we handle it from here onwards.
+                    $("#paypalHolder").hide();
+                    $(".paypal-payment-info", "#paypalContainer").hide();
+
+                    $(".error-message", "#paypalErrorHolder").html(response.Message);
+                    $("#paypalErrorHolder").show();
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("checkout-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+        }
+        else {
+            Swal.fire("@("PP.Message.Warning".LocalizedString())", "@("PP.Checkout.Validations.PayPalOrderIssue".LocalizedString())", "warning");
+        }
+    }
+</script>

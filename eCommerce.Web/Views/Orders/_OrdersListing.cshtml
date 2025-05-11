@@ -1,0 +1,144 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared.Helpers
+@model eCommerce.Web.ViewModels.UserOrdersViewModel
+
+@if (Model != null && Model.UserOrders != null && Model.UserOrders.Count > 0)
+{
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @("PP.UserProfile.UserOrders.OrderID".Localized())
+                </th>
+                <th>
+                    @("PP.UserProfile.UserOrders.PlacedOnDate".Localized())
+                </th>
+                <th>
+                    @("PP.UserProfile.UserOrders.OrderAmount".Localized())
+                </th>
+                <th>
+                    @("PP.UserProfile.UserOrders.Status".Localized())
+                </th>
+                <th>
+                    @("PP.UserProfile.UserOrders.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.UserOrders)
+            {
+                var orderCurrentHistory = order.OrderHistory.OrderByDescending(x => x.ModifiedOn).FirstOrDefault();
+
+                <tr>
+                    <td>
+                        @order.ID
+                    </td>
+                    <td>
+                        @order.PlacedOn
+                    </td>
+                    <td class="ltr-dir">
+                        @order.FinalAmmount.WithCurrency()
+                    </td>
+                    @if (orderCurrentHistory != null)
+                    {
+                        <td class="@Html.getCellBackgroundClassByOrderStatus((OrderStatus)orderCurrentHistory.OrderStatus)">
+                            <span>
+                                @(string.Format("PP.UserProfile.UserOrders.OrderStatus." + ((OrderStatus)orderCurrentHistory.OrderStatus).ToString()).Localized())
+                            </span>
+                            <br />
+                            <div class="small">
+                                @("PP.UserProfile.UserOrders.UpdatedOn".Localized()): @orderCurrentHistory.ModifiedOn
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <span>-</span>
+                        </td>
+                    }
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-warning" href="@Url.OrderTrack(order.ID.ToString())" target="_blank">
+                                <i class="fas fa-search-location mr-1"></i>
+                                @("PP.UserProfile.UserOrders.Track".Localized())
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link pointerCursor" href="#">@("PP.UserProfile.UserOrders.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrders(Model.UserEmail, Model.OrderID, Model.OrderStatus, Model.Pager.CurrentPage - 1)">@("PP.UserProfile.UserOrders.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrders(Model.UserEmail, Model.OrderID, Model.OrderStatus, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link pointerCursor" href="#">@("PP.UserProfile.UserOrders.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrders(Model.UserEmail, Model.OrderID, Model.OrderStatus, Model.Pager.CurrentPage + 1)">@("PP.UserProfile.UserOrders.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+<div class="alert alert-warning" role="alert">
+    @("PP.UserProfile.UserOrders.NoOrdersFound".Localized())
+</div>
+}
+
+<script>
+    $(".datalink").click(function () {
+        var url = $(this).attr("data-href");
+
+        if (url != undefined && url != "") {
+            addLoader("response-holder");
+
+            $.ajax({
+                url: url,
+            })
+            .done(function (response) {
+                $("#response-holder").html(response);
+                removeLoader("response-holder");
+            })
+			.fail(function () {
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+			});
+        }
+    });
+</script>

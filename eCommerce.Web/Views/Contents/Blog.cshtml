@@ -1,0 +1,123 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+
+<section class="page-content">
+    <div class="row">
+        <div class="col col-12" style="background-image: url('/Content/images/site/pages/blog.jpg');">
+            <div style="height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-content py-5">
+    <div class="row">
+        <div class="col col-12">
+            <h1>
+                @Model.PageTitle
+            </h1>
+            <p class="lead">
+                @Model.PageDescription
+            </p>
+            <hr />
+        </div>
+        <div class="col col-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="#">
+                        <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/600x250" alt="">
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h4>Allbirds launches online store in Europe.</h4>
+                    <p>
+                        Allbirds has launched its online store in Europe. Consumers from twelve different countries across Europe can now orders sustainable shoes from the American brand through the dedicated ecommerce website.
+                        <a href="#">Continue Reading...</a>
+                    </p>
+                    <small title="Author"><i class="fas fa-user-tie mr-1"></i> iMelinda</small>
+                    <br />
+                    <small title="Posted On"><i class="fas fa-calendar-alt mr-1"></i> @DateTime.Now.AddDays(-2)</small>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="#">
+                        <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/600x250" alt="">
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h4>Worten launches its marketplace in Spain.</h4>
+                    <p>
+                        Worten, a popular electronics retailer from Portugal, has completely renewed its ecommerce website in Spain. Worten.es now includes an online marketplace which allows customers to access over 700,000 new products in over 30 categories.
+                        <a href="#">Continue Reading...</a>
+                    </p>
+                    <small title="Author"><i class="fas fa-user-tie mr-1"></i> RakeshKumar</small>
+                    <br />
+                    <small title="Posted On"><i class="fas fa-calendar-alt mr-1"></i> @DateTime.Now.AddDays(-4)</small>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="#">
+                        <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/600x250" alt="">
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h4>Fashion retail group Tendam’s online sales grow 29.4%.</h4>
+                    <p>
+                        Tendam, the Spanish fashion retail group that was formerly known as the Cortefiel Group, saw its online sales grow by 29.4 percent last year. Online sales now account for almost 8 percent of the company’s total sales in Spain.
+                        <a href="#">Continue Reading...</a>
+                    </p>
+                    <small title="Author"><i class="fas fa-user-tie mr-1"></i> jason</small>
+                    <br />
+                    <small title="Posted On"><i class="fas fa-calendar-alt mr-1"></i> @DateTime.Now.AddDays(-5)</small>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="#">
+                        <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/600x250" alt="">
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h4>Alibaba launches English portal on Tmall.</h4>
+                    <p>
+                        Alibaba Group has launched an English portal on Tmall Global, the major cross-border online shopping platform. With this move, the Chinese company wants to boost its international expansion. Tmall wants to double the number of foreign brands in three years.
+                        <a href="#">Continue Reading...</a>
+                    </p>
+                    <small title="Author"><i class="fas fa-user-tie mr-1"></i> AyeshaKhan</small>
+                    <br />
+                    <small title="Posted On"><i class="fas fa-calendar-alt mr-1"></i> @DateTime.Now.AddDays(-7)</small>
+                </div>
+            </div>
+            <hr>
+
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>

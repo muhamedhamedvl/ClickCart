@@ -1,0 +1,74 @@
+﻿@model eCommerce.Web.ViewModels.HomeSlidersViewModel
+
+@if (Model != null && Model.SlidersConfigurations != null && Model.SlidersConfigurations.Count > 0)
+{
+    var i = 0;
+    var j = 0;
+
+    <div id="carouselIndicators" class="home-slider-carousel carousel slide" data-ride="carousel">
+        @if (Model.SlidersConfigurations.Count > 1)
+        {
+            <ol class="carousel-indicators home-carousel-indicators">
+                @foreach (var slider in Model.SlidersConfigurations)
+                {
+                    <li data-target="#carouselIndicators" data-slide-to="@i" class="@(i == 0 ? "active" : string.Empty)"></li>
+
+                    i++;
+                }
+            </ol>
+        }
+        <div class="carousel-inner home-carousel-inner" role="listbox">
+            @foreach (var configuration in Model.SlidersConfigurations)
+            {
+                @* TODO: Localizing Slider *@
+
+                var img = configuration.Value.GetSubstringText("#IMG#", "#TH#");
+                var topHeading = configuration.Value.GetSubstringText("#TH#", "#PG#");
+                var paragraph = configuration.Value.GetSubstringText("#PG#", "#LK#");
+                var link = configuration.Value.GetSubstringText("#LK#", "");
+
+                if (!string.IsNullOrEmpty(img))
+                {
+                    img = img.Replace("IMG#", "");
+                }
+                if (!string.IsNullOrEmpty(topHeading))
+                {
+                    topHeading = topHeading.Replace("TH#", "");
+                }
+                if (!string.IsNullOrEmpty(paragraph))
+                {
+                    paragraph = paragraph.Replace("PG#", "");
+                }
+                if (!string.IsNullOrEmpty(link))
+                {
+                    link = link.Replace("LK#", "");
+                }
+
+                <div class="carousel-item text-center @(j == 0 ? "active" : string.Empty)">
+                    @Html.Picture(img, classes: "img-fluid", alt: "Slider")
+
+                    @if (!string.IsNullOrEmpty(topHeading) || !string.IsNullOrEmpty(paragraph) || !string.IsNullOrEmpty(link))
+                    {
+                        <div class="carousel-caption">
+                            <a href="@link.IfNullOrEmptyShowAlternative("#")">
+                                <h5>@topHeading</h5>
+                                <p>@paragraph</p>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                j++;
+            }
+        </div>
+        @if (Model.SlidersConfigurations.Count > 1)
+        {
+            <a class="carousel-control-prev home-carousel-prev" href="#carouselIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </a>
+            <a class="carousel-control-next home-carousel-next" href="#carouselIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </a>
+        }
+    </div>
+}

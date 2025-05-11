@@ -1,0 +1,99 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.UserRolesViewModel
+
+@if (Model != null)
+{
+    if (Model.UserRoles != null && Model.UserRoles.Count > 0)
+    {
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th colspan="2"><i class="fas fa-user-shield mr-1"></i> @("Dashboard.UserDetails.Roles.CurrentUserRoles".Localized())</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var role in Model.UserRoles)
+                {
+                    <tr>
+                        <td width="70%">@role.Name</td>
+                        <td width="30%">
+                            <button type="button" class="btn btn-danger btnRemoveRole" data-id="@role.Id"><i class="fas fa-user-times mr-1"></i> @("Dashboard.UserDetails.Roles.RemoveUserRole".Localized())</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning rounded-0 m-0" role="alert">
+            @("Dashboard.UserDetails.Roles.UserDoesntHaveRoles".Localized())
+        </div>
+    }
+
+    var userCanHaveRoles = Model.AvailableRoles.Where(r => Model.UserRoles.FirstOrDefault(ur => ur.Id == r.Id) == null).ToList();
+
+    if (userCanHaveRoles != null && userCanHaveRoles.Count > 0)
+    {
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th colspan="2"><i class="fas fa-user-plus mr-1"></i> @("Dashboard.UserDetails.Roles.AssignNewRoles".Localized())</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="70%">
+                        <select class="form-control" id="sltAssignRoles">
+                            <option value="">@("Dashboard.UserDetails.Roles.SelectRole".Localized())</option>
+                            @foreach (var role in userCanHaveRoles)
+                            {
+                                <option value="@role.Id">
+                                    @role.Name
+                                </option>
+                            }
+                        </select>
+                    </td>
+                    <td width="30%">
+                        <button id="btnAssignRole" type="button" class="btn btn-success"><i class="fas fa-user-check mr-1"></i> @("Dashboard.UserDetails.Roles.AssignUserRole".Localized())</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+}
+
+<script>
+    $("#btnAssignRole").click(function () {     
+        if ($("#sltAssignRoles").val()) {
+            roleAction("@Url.AssignUserRole(Model.User.Id)", $("#sltAssignRoles").val());
+        }
+        else {
+            Swal.fire("@("Dashboard.Message.Warning".Localized())", "@("Dashboard.UserDetails.Roles.Action.Validation.SelectValidRole".Localized())", "warning");
+        }
+	});
+
+	$(".btnRemoveRole").click(function () {
+        roleAction("@Url.RemoveUserRole(Model.User.Id)", $(this).attr("data-id"));
+    });
+
+    function roleAction(url, roleID) {
+        if (roleID != undefined && roleID != "") {
+            addLoader("response-holder");
+
+            $.ajax({
+				url: url,
+				data: {
+					roleID: roleID
+				}
+			})
+			.done(function (response) {
+                removeLoader("response-holder");
+				$("#response-holder").html(response);
+			})
+            .fail(function () {
+                removeLoader("response-holder");
+                Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+	    	});
+		}
+    }
+</script>

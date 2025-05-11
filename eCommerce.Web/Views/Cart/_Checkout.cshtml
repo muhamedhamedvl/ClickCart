@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNet.Identity
+@model eCommerce.Web.ViewModels.CheckoutViewModel
+
+@if (Model != null)
+{
+    if (Model.CartHasProducts)
+    {
+        <section class="">
+            <div class="row checkout-form">
+                <div class="col-lg-8">
+                    <div class="contact-container">
+                        <h4>@("PP.Checkout.ContactDetails".LocalizedString())</h4>
+                        @{ Html.RenderPartial("_ContactDetails", Model); }
+                    </div>
+                    <div class="shipping-container">
+                        <h4>@("PP.Checkout.ShippingDetails".LocalizedString())</h4>
+                        @{ Html.RenderPartial("_ShippingInfo", Model); }
+                    </div>
+                    <div class="biling-container">
+                        <h4>@("PP.Checkout.Payment".LocalizedString())</h4>
+                        @{ Html.RenderPartial("_PaymentDetails", Model); }
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="place-order">
+                        <h4>@("PP.Checkout.YourOrder".LocalizedString())</h4>
+                        <div class="order-total">
+                            <ul class="order-table">
+                                <li>
+                                    @("PP.Checkout.Product".LocalizedString())
+                                    <span>@("PP.Checkout.Total".LocalizedString())</span>
+                                </li>
+                                @foreach (var cartItem in Model.CartItems)
+                                {
+                                    var product = Model.Products.FirstOrDefault(p => p.ID == cartItem.ItemID);
+                                    var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+                                    var productPrice = product.Discount.HasValue && product.Discount.Value > 0 ? product.Discount.Value : product.Price;
+                                    
+                                    <li class="fw-normal">
+                                        <div>
+                                            @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Format("Product: {0}", product.ID))
+                                        </div>
+                                        <i class="ltr-dir" title="@("PP.Checkout.ItemQuantity".LocalizedString())">x @cartItem.Quantity</i> <span class="ltr-dir">@((productPrice * cartItem.Quantity).WithCurrency())</span>
+                                    </li>
+                                }
+                                <li class="fw-normal">
+                                    @("PP.Checkout.SubTotal".LocalizedString())
+                                    <span class="ltr-dir">@Model.TotalAmount.WithCurrency()</span>
+                                </li>
+                                <li class="fw-normal">
+                                    @("PP.Checkout.Discount".LocalizedString())
+                                    <span class="ltr-dir @(Model.PromoApplied ? "text-success" : string.Empty)">@Model.Discount.WithCurrency()</span>
+                                    @if (Model.PromoApplied)
+                                    {
+                                        <div class="alert alert-success my-2 rounded-0" role="alert">
+                                            @("PP.Checkout.PromoApplied".LocalizedString().Replace("{promocode}", SessionHelper.PromoCode))
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <br />
+                                        <a class="text-info" href="@Url.Cart()">@("PP.Checkout.HavePromoApplyHere".LocalizedString())</a>
+                                    }
+                                </li>
+                                <li class="fw-normal">
+                                    @("PP.Checkout.ShippingCharges".LocalizedString())
+                                    <span class="ltr-dir">@ConfigurationsHelper.FlatDeliveryCharges.WithCurrency()</span>
+                                </li>
+                                <li class="total-price">
+                                    @("PP.Checkout.Total".LocalizedString())
+                                    <span class="ltr-dir">@Model.FinalAmount.WithCurrency()</span>
+                                </li>
+                            </ul>
+                            <div class="my-2 small">
+                                <i class="@(AppDataHelper.IsRTL ? "pl-2" : "pr-2") fas fa-cart-arrow-down"></i>
+                                <a href="@Url.Cart()" class="text-info mt-3 text-capitalize">@("PP.Checkout.ModifyCartItemsHere".LocalizedString())</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <div class="alert alert-warning mb-0" role="alert">
+            @("PP.Checkout.NoProductsInCart".LocalizedString())
+        </div>
+    }
+}

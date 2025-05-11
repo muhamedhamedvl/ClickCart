@@ -1,0 +1,111 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.RoleUsersViewModel
+
+<table class="table table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th colspan="4">
+                <i class="fas fa-user-shield mr-1"></i> @("Dashboard.RoleDetails.Users.UsersWithRole".Localized())
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.RoleUsers != null && Model.RoleUsers.Count > 0)
+        {
+            foreach (var user in Model.RoleUsers)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" value="@user.Id" />
+                        @user.FullName
+                    </td>
+                    <td>
+                        @user.UserName
+                    </td>
+                    <td>
+                        @user.Email
+                    </td>
+                    <td>
+                        <a href="@Url.UserDetails(user.Id)" class="btn btn-primary">
+                            <i class="fas fa-user mr-1"></i>
+                            @("Dashboard.RoleDetails.Users.MoreDetails".Localized())
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td class="text-center" colspan="7">
+                    @("Dashboard.RoleDetails.Users.NoUsersWithRole".Localized())
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Pager != null && Model.Pager.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (Model.Pager.CurrentPage == 1)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link pointerCursor" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link role-page pointerCursor" data-href="@Url.RoleUsers(Model.RoleID, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                </li>
+            }
+
+            @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+            {
+                var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                <li class="page-item @active">
+                    <a class="page-link role-page pointerCursor" data-href="@Url.RoleUsers(Model.RoleID, page)">
+                        @page
+                    </a>
+                </li>
+            }
+
+            @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link pointerCursor" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link role-page pointerCursor" data-href="@Url.RoleUsers(Model.RoleID, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<script>
+    $(".role-page").click(function () {
+        var url = $(this).attr("data-href");
+
+        if (url != undefined && url != "") {
+            addLoader("response-holder");
+
+            $.ajax({
+                url: url,
+            })
+            .done(function (response) {
+                $("#response-holder").html(response);
+                 removeLoader("response-holder");
+            })
+            .fail(function () {
+                 removeLoader("response-holder");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		    });
+        }
+    });
+</script>

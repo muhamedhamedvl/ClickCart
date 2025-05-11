@@ -1,0 +1,71 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared
+@model eCommerce.Web.ViewModels.ProductsViewModel
+
+@if (Model != null)
+{
+    <div class="product-show-option">
+        <div class="row">
+            <div class="col-lg-8 col-md-8">
+                <div class="select-option">
+                    <select class="sorting" id="sortBy">
+                        <option value="latest" @(string.IsNullOrEmpty(Model.SortBy) || Model.SortBy == "latest" ? "selected" : string.Empty)>@("PP.Search.SortBy.LatestProducts".LocalizedString())</option>
+                        <option value="price" @(Model.SortBy == "price" ? "selected" : string.Empty)>@("PP.Search.SortBy.PriceLowToHigh".LocalizedString())</option>
+                        <option value="price-high" @(Model.SortBy == "price-high" ? "selected" : string.Empty)>@("PP.Search.SortBy.PriceHighToLow".LocalizedString())</option>
+                    </select>
+                    <select class="p-show" id="recordSize">
+                        @foreach (var pageSize in Enum.GetValues(typeof(RecordSizeEnums)).Cast<RecordSizeEnums>())
+                        {
+                            var value = (int)pageSize;
+
+                            <option value="@value" @(value == Model.PageSize ? "selected" : string.Empty)>
+                                @("PP.Search.ShowNoOfProduct".LocalizedString().Replace("{number}", value.ToString()))
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 text-right">
+                <p>
+                    @("PP.Search.ShowingProductRange".LocalizedString()
+                                                     .Replace("{startingIndex}", (Model.Pager.StartIndex + (Model.Pager.TotalItems > 0 ? 1 : 0)).ToString())
+                                                     .Replace("{endingIndex}", (Model.Pager.EndIndex + 1).ToString())
+                                                     .Replace("{total}", (Model.Pager.TotalItems).ToString()))
+                </p>
+            </div>
+        </div>
+        <input type="hidden" name="sortBy" value="@Model.SortBy" @(string.IsNullOrEmpty(Model.SortBy) ? "disabled=disabled" : string.Empty) />
+        <input type="hidden" name="recordSize" value="@Model.PageSize" @(!Model.PageSize.HasValue || Model.PageSize == (int)RecordSizeEnums.Size8 ? "disabled=disabled" : string.Empty) />
+    </div>
+    <script>
+        $("#sortBy").change(function () {
+            var val = $(this).val();
+
+            if (val) {
+                $("[name=sortBy]").val(val);
+                $("[name=sortBy]").removeAttr("disabled");
+            }
+            else {
+                $("[name=sortBy]").val("");
+                $("[name=sortBy]").attr("disabled", "disabled");
+            }
+
+            Search();
+        });
+
+        $("#recordSize").change(function () {
+            var val = $(this).val();
+
+            if (val) {
+                $("[name=recordSize]").val(val);
+                $("[name=recordSize]").removeAttr("disabled");
+            }
+            else {
+                $("[name=recordSize]").val("");
+                $("[name=recordSize]").attr("disabled", "disabled");
+            }
+
+            Search();
+        });
+    </script>
+}

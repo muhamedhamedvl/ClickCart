@@ -1,0 +1,90 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.RolesListingViewModel
+
+@if (Model != null && Model.Roles != null && Model.Roles.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @("Dashboard.Roles.Role".Localized())
+                </th>
+                <th width="15%">
+                    @("Dashboard.Roles.Users".Localized())
+                </th>
+                <th width="25%">
+                    @("Dashboard.Roles.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>
+                        @role.Name
+                    </td>
+                    <td>
+                        <a href="@Url.Users(roleID: role.Id)">@role.Users.Count</a>
+                    </td>
+                    <td>
+                        <a href="@Url.RoleDetails(role.Id)" class="btn btn-primary" data-id="@role.Id">
+                            <i class="fas fa-user-shield mr-1"></i>
+                            @("Dashboard.Roles.MoreDetails".Localized())
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.ListAction("Roles", Model.SearchTerm, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.ListAction("Roles", Model.SearchTerm, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.ListAction("Roles", Model.SearchTerm, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Roles.NoRolesFound".Localized())
+    </div>
+}

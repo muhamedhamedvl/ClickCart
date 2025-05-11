@@ -1,0 +1,37 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.PromosListingViewModel
+
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Promos.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Promos.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Promos");
+        Model.PageImageURL = PictureHelper.PageImageURL("promos.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Promos")">
+            <div class="input-group">
+                <input name="searchterm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Promos.SearchPlaceholder".Localized())">
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Promos.Search".Localized())</button>
+                <a href="@Url.ListAction("Promos")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Promos.Reset".Localized())</a>
+                <a href="@Url.CreateAction("Promos")" role="button" class="form-control btn btn-success"><i class="fas fa-plus"></i> @("Dashboard.Promos.CreatePromo".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>

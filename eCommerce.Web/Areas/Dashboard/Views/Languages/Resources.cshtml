@@ -1,0 +1,150 @@
+﻿@model LanguageResourceViewModel
+
+@if (Model.Language != null)
+{
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    @("Dashboard.Languages.Action.ImportResources".Localized())
+                </div>
+                <div class="card-body" id="importContainer">
+                    <div class="response-holder">
+                        <form id="importForm" method="post" action="@Url.ImportResources(Model.ID)">
+                            <input type="hidden" name="ID" value="@Model.ID" />
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="importFileInput" name="importFileInput">
+                                        <label class="custom-file-label" for="importFileInput">@("Dashboard.Languages.Action.ChooseFile".Localized())</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit" id="importButton">
+                                            <i class="fas fa-file-upload mr-2"></i>
+                                            @("Dashboard.Languages.Action.Import".Localized())
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    @("Dashboard.Languages.Action.ExportResources".Localized())
+                </div>
+                <div class="card-body" id="exportContainer">
+                    <div class="response-holder">
+                        @if (Model.HasResources)
+                        {
+                            <form id="exportForm" method="post" action="@Url.ExportResources(Model.ID)">
+                                <input type="hidden" name="ID" value="@Model.ID" />
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">@("Dashboard.Languages.Action.ExportLanguageResources".Localized())</span>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit" id="exportButton">
+                                                <i class="fas fa-file-download mr-2"></i>
+                                                @("Dashboard.Languages.Action.Export".Localized())
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="alert alert-danger mb-0" role="alert">
+                                @("Dashboard.Languages.Action.ExportNoResourcesWarning".Localized())
+                            </div>
+                        }
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $("#importForm").submit(function (e) {
+        if ($("#importFileInput").val()) {
+            addLoader("importContainer");
+
+            var files = $("#importFileInput")[0].files;
+
+		    var fileData = new FormData();
+
+		    for (var i = 0; i < files.length; i++) {
+		    	fileData.append("File", files[i]);
+            }
+
+            $.ajax({
+                url: "@Url.ImportResources(Model.ID)",
+                type: "post",
+                data: fileData,
+			    dateType: "json",
+			    processData: false,
+			    contentType: false
+			})
+            .done(function (response) {
+                removeLoader("importContainer");
+
+                if (response.Success) {
+                    Swal.fire({
+                        title: '@("Dashboard.Message.Success".LocalizedString().Replace("'", "''"))',
+                        text: "@("Dashboard.Languages.Action.ResourcesImportedSuccess".LocalizedString().Replace("'", "''"))",
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: '@("Dashboard.Message.OK".LocalizedString().Replace("'", "''"))'
+                    }).then((result) => {
+                        window.location.href = "@Url.ListAction("Languages")";
+                    });
+			    }
+			    else {
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                }
+			})
+            .fail(function () {
+                removeLoader("importContainer");
+                Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	    });
+        }
+        else {
+            Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Languages.Action.Validation.SelectFileToUpload".Localized())", "error");
+        }
+
+        e.preventDefault();
+    });
+
+    $("#exportForm").submit(function (e) {
+        Swal.fire({
+            title: "@("Dashboard.Message.Warning".Localized())",
+            text: "@("Dashboard.Languages.Action.ResourcesExportingWarning".Localized())",
+            icon: 'warning',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: '@("Dashboard.Message.OK".LocalizedString().Replace("'", "''"))'
+        }).then((result) => {
+            console.log("OK");
+        });
+
+        @*$(".dtLoader", "#exportContainer").show();
+        $(".response-holder", "#exportContainer").hide();
+
+        $.ajax({
+            url: "@Url.ExportResources(Model.ID)",
+            type: "post",
+            data: $("#importForm").serialize()
+		})
+        .done(function () {
+            $(".dtLoader", "#exportContainer").hide();
+            $(".response-holder", "#exportContainer").show();
+        });
+
+        //e.preventDefault();*@
+    });
+    </script>
+}

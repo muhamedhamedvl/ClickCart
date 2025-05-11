@@ -1,0 +1,103 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+
+@{
+    //Model.PageTitle = "PP.Register.Title".LocalizedString();
+    //Model.PageDescription = "PP.Register.Description".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+    Model.PageTitle = "About Us";
+    Model.PageURL = Url.StaticPage("AboutUs");
+    Model.PageImageURL = PictureHelper.PageImageURL("about-us.jpg");
+}
+
+<div class="register-login-section spad">
+    <div class="container" id="register-container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="login-form page-content-holder">
+                    <div class="page-content-header">
+                        <h2>@Model.PageTitle</h2>
+                    </div>
+                    <section class="section-margin--small">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col col-12">
+                                    <p>When you have a great story about how your product or service was built to change lives, share it. The "About Us" page is a great place for it to live, too. Good stories humanize your brand, providing context and meaning for your product. What’s more, good stories are sticky -- which means people are more likely to connect with them and pass them on.</p>
+                                    <p>Yellow Leaf Hammocks tells users about its product by describing how the hammocks empower artisan weavers and their families. The company breaks down different pieces of the story into sections that combine words and easily digestible graphics, painting a picture instead of big chunks of text. They're clear about why they're different: "Not a Charity," the page reads. And then: "This is the basis for a brighter future, built on a hand up, not a handout."</p>
+                                    <p>Every company has a story to tell, so break out your storytelling skills from that random English class you took years ago and put them to work on your "About Us" page. Using descriptive and emotive copy and gorgeous graphics, an "About Us" page with a story works harder for your business than a generic one.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <hr />
+                    <section class="mb-5">
+                        <div class="container">
+
+                            <div class="row">
+                                <div class="col col-12 py-5 text-center">
+                                    <h3>Our Team</h3>
+                                    <p>
+                                        Know more about us and the great work we do here at eCommerce MVC.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-12">
+                                    <div class="card-group">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Founder &amp; Chief Operating Officer
+                                            </div>
+                                            <img class="card-img-top rounded-0" src="~/Content/images/site/team/person1.jpg" alt="Card image cap">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jack Williams</h5>
+                                                <p class="card-text">
+                                                    People find me to be an upbeat, self-motivated team player with excellent communication skills. For the past several years I have worked in lead qualification, telemarketing, and customer service in the technology industry.
+                                                </p>
+                                            </div>
+                                            <div class="card-footer text-muted">
+                                                <i class="fas fa-envelope mr-1"></i>
+                                                <a href="mailto:ceo@ecommercemvc.com">Contact Me</a>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Chief Marketing Officer
+                                            </div>
+                                            <img class="card-img-top rounded-0" src="~/Content/images/site/team/person2.jpg" alt="Card image cap">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Amelia Rose</h5>
+                                                <p class="card-text">
+                                                    I am a dedicated person with a family of four. I enjoy reading, and the knowledge and perspective that my reading gives me has strengthened my skills and presentation abilities.
+                                                </p>
+                                            </div>
+                                            <div class="card-footer text-muted">
+                                                <i class="fas fa-envelope mr-1"></i>
+                                                <a href="mailto:cmo@ecommercemvc.com">Contact Me</a>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Chief Technology Officer
+                                            </div>
+                                            <img class="card-img-top rounded-0" src="~/Content/images/site/team/person3.jpg" alt="Card image cap">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Charlie Mason</h5>
+                                                <p class="card-text">
+                                                    I’ll be the first to say that family photos are hard to get just right. Maybe you’ve been trying for years to get that holiday card money shot where everyone is actually smiling.
+                                                </p>
+                                            </div>
+                                            <div class="card-footer text-muted">
+                                                <i class="fas fa-envelope mr-1"></i>
+                                                <a href="mailto:cto@ecommercemvc.com">Contact Me</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

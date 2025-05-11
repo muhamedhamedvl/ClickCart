@@ -1,0 +1,103 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.UserDetailsViewModel
+
+@if (Model != null && Model.User != null)
+{
+    Model.PageTitle = "Dashboard.UserDetails.Title".LocalizedString();
+    Model.PageDescription = "Dashboard.UserDetails.Description".LocalizedString();
+    Model.PageURL = Url.UserDetails(Model.User.Id);
+    Model.PageImageURL = PictureHelper.PageImageURL("users.jpg");
+
+    <div class="page-info-container">
+        <h3 class="h3 mb-2 text-gray-800">
+            @Model.PageTitle
+        </h3>
+        <p>
+            @Model.PageDescription
+        </p>
+        <hr />
+    </div>
+
+    <div class="page-data-holder mb-4">
+        <div class="row mt-2">
+            <div class="col-lg-3">
+                <div class="card">
+                    @Html.UserAvatar(Model.User.Picture, "card-img-top", alt: "User Avatar", lazyLoad: false)
+                    <div class="card-body">
+                        <h5 class="card-title m-0">@Model.User.FullName</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" title="@("Dashboard.UserDetails.Username".Localized())">
+                            <i class="fas fa-user-alt mr-1"></i>
+                            @Model.User.UserName
+                        </li>
+                        @if (!string.IsNullOrEmpty(Model.User.Country) || !string.IsNullOrEmpty(Model.User.City))
+                        {
+                            <li class="list-group-item" title="@("Dashboard.UserDetails.Location".Localized())">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                @string.Format("{0}{1}{2}", !string.IsNullOrEmpty(Model.User.City) ? Model.User.City : string.Empty, !string.IsNullOrEmpty(Model.User.City) && !string.IsNullOrEmpty(Model.User.Country) ? ", " : string.Empty, Model.User.Country)
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="pointerCursor user-link nav-link active" data-href="@Url.UserDetails(Model.User.Id)">@("Dashboard.UserDetails.Info".Localized())</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="pointerCursor user-link nav-link" data-href="@Url.UserRoles(Model.User.Id)">@("Dashboard.UserDetails.Roles".Localized())</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="pointerCursor user-link nav-link" data-href="@Url.UserOrdersList(Model.User.Id)">@("Dashboard.UserDetails.Orders".Localized())</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="pointerCursor user-link nav-link" data-href="@Url.Comments(userID: Model.User.Id, showUserCommentsOnly: true)">@("Dashboard.UserDetails.Comments".Localized())</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body" id="response-holder">
+                        @{
+                            Html.RenderPartial("_UserDetails", Model);
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger rounded-0 m-0" role="alert">
+        @("Dashboard.UserDetails.NoUserFound".Localized())
+    </div>
+}
+
+<script>
+    $(".user-link").click(function () {
+        var url = $(this).attr("data-href");
+
+        if (url != undefined && url != "") {
+            addLoader("response-holder");
+
+            var $selectedTab = $(this);
+
+            $.ajax({
+                url: url,
+            })
+            .done(function (response) {                
+                $(".user-link").removeClass("active");
+                $selectedTab.addClass("active");
+
+                $("#response-holder").html(response);
+                removeLoader("response-holder");
+            })
+            .fail(function () {
+                 removeLoader("response-holder");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			});
+        }
+    });
+</script>

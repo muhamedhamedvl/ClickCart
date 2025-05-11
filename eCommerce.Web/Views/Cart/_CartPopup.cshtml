@@ -1,0 +1,55 @@
+﻿@model CartItemsViewModel
+
+@if (Model != null && Model.CartItems != null && Model.CartItems.Count > 0 && Model.Products != null && Model.Products.Count > 0)
+{
+    var totalAmount = Model.CartItems.Sum(z => z.ProductTotal);
+
+    <div class="select-items">
+        <table>
+            <tbody>
+                @foreach (var cartItem in Model.CartItems)
+                {
+                    var product = Model.Products.FirstOrDefault(p => p.ID == cartItem.ItemID);
+                    var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                    var thumbnail = PictureHelper.GetProductThumbnail(product.ProductPictures, product.ThumbnailPictureID);
+                    
+                    var sanitizedSEOTitle = AppDataHelper.CurrentLanguage.ShortCode == LanguagesHelper.EnglishLanguageShortCode && currentLanguageProductRecord != null ? currentLanguageProductRecord.Name.SanitizeLowerString() : string.Empty;
+
+                    <tr>
+                        <td class="si-pic">
+                            @Html.Thumbnail(picture: thumbnail, targetSize: 80, seoTitle: sanitizedSEOTitle, classes: "m-auto", alt: currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty, lazyLoad: false)
+                        </td>
+                        <td class="si-text">
+                            <div class="product-selected">
+                                <p class="ltr-dir">@cartItem.Price.WithCurrency() x @cartItem.Quantity</p>
+                                <a href="@Url.ProductDetails(category: product.Category.SanitizedName, ID: product.ID, sanitizedtitle: AppDataHelper.CurrentLanguage.ShortCode == LanguagesHelper.EnglishLanguageShortCode && currentLanguageProductRecord != null ? currentLanguageProductRecord.Name.SanitizeLowerString() : string.Empty)">
+                                    <h6>
+                                        @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                                    </h6>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="select-total">
+        <span>@("PP.Shopping.CartTotal".Localized()):</span>
+        <h5 class="ltr-dir">@totalAmount.WithCurrency()</h5>
+    </div>
+    <div class="select-button">
+        <a href="@Url.Cart()" class="primary-btn view-card">@("PP.Shopping.CartDetails".Localized())</a>
+        <a href="@Url.Checkout()" class="primary-btn checkout-btn">@("PP.Shopping.Checkout".Localized())</a>
+    </div>
+}
+else
+{
+    <div class="select-items">
+        <div class="alert alert-warning mb-0" role="alert">
+            @("PP.Shopping.NoProductsInCart".Localized())
+        </div>
+    </div>
+}
+

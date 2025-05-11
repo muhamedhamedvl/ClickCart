@@ -1,0 +1,53 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared
+@model eCommerce.Web.ViewModels.FeaturedProductsViewModel
+
+@if (Model.Products != null && Model.Products.Count > 0)
+{
+    <section class="section-margin--small calc-60px">
+        <div class="container">
+            <div class="section-intro pb-60px">
+                <p>@ConfigurationsHelper.ApplicationName's</p>
+                <h2>Latest <span class="section-intro__style">Products</span></h2>
+            </div>
+            <div class="owl-carousel owl-theme" id="bestSellerCarousel">
+                @foreach (var product in Model.Products)
+                {
+                    var thumbnail = new Picture();
+
+                    if (product.ProductPictures != null && product.ProductPictures.Count > 0)
+                    {
+                        var selectedThumbnail = product.ProductPictures.FirstOrDefault(x => x.PictureID == product.ThumbnailPictureID);
+
+                        thumbnail = selectedThumbnail != null ? selectedThumbnail.Picture : product.ProductPictures.FirstOrDefault().Picture;
+                    }
+
+                    <div class="card text-center card-product">
+                        <div class="card-product__img">
+                            <a href="@Url.ProductDetails(product.Category.SanitizedName, product.ID)">
+                                @Html.Picture(thumbnail, "card-img", alt: product.Name)
+                            </a>
+                            <ul class="card-product__imgOverlay">
+                                <li><button class="link-button" data-href="@Url.ProductDetails(product.Category.SanitizedName, product.ID)"><i class="fas fa-link"></i></button></li>
+                                <li><button class="btnAddToCart" data-id="@product.ID"><i class="fas fa-shopping-cart"></i></button></li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <a href="@Url.SearchProducts(product.Category.SanitizedName)" class="card-link">
+                                @product.Category.Name
+                            </a>
+                            <h4 class="card-product__title">
+                                <a href="@Url.ProductDetails(product.Category.SanitizedName, product.ID)">
+                                    @product.Name
+                                </a>
+                            </h4>
+                            <p class="card-product__price ltr-dir">
+                                @product.Price.WithCurrency()
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}

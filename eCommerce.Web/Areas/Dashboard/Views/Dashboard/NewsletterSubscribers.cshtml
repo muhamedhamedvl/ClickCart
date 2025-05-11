@@ -1,0 +1,35 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.NewsletterSubscribersListingViewModel
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.NewsletterSubscribers.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.NewsletterSubscribers.Description".LocalizedString();
+        Model.PageURL = Url.NewsletterSubscribers();
+        Model.PageImageURL = PictureHelper.PageImageURL("NewsletterSubscribers.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.NewsletterSubscribers()">
+            <div class="input-group">
+                <input name="searchTerm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.NewsletterSubscribers.SearchPlaceholder".Localized())">
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.NewsletterSubscribers.Search".Localized())</button>
+                <a href="@Url.NewsletterSubscribers()" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.NewsletterSubscribers.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_NewsletterSubscribersListing", Model);}
+    </div>
+</div>

@@ -1,0 +1,88 @@
+﻿<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<footer class="footer-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="footer-left">
+                    @* TODO: We should be able to localize the application name along with Logo and Address *@
+                    <div class="footer-logo">
+                        <a href="@Url.Home()">
+                            <h5>
+                                @ConfigurationsHelper.ApplicationName
+
+                            </h5>
+                            <p style="font-size: 18px; color: #555;">
+                                Our beloved supervisor: <strong>Basma Elsharkawy</strong> <i class="fas fa-heart" style="color: red;"></i>
+                            </p>
+                        </a>
+                    </div>
+                 
+                    <p>
+                        @ConfigurationsHelper.ApplicationIntro
+                        <br />
+                        <address class="small text-muted">
+                            @Html.Raw(string.Format("{0}<br/>{1}", ConfigurationsHelper.AddressLine1, ConfigurationsHelper.AddressLine2))
+                        </address>
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="footer-widget">
+                    <h5>@("PP.Footer.Information".Localized())</h5>
+                    <ul>
+                        <li><a href="@Url.StaticPage("AboutUs")">@("PP.Footer.Information.AboutUs".Localized())</a></li>
+                        <li><a href="@Url.StaticPage("ContactUs")">@("PP.Footer.Information.ContactUs".Localized())</a></li>
+                        <li><a href="@Url.StaticPage("PrivacyPolicy")">@("PP.Footer.Information.PrivacyPolicy".Localized())</a></li>
+                        <li><a href="@Url.StaticPage("RefundPolicy")">@("PP.Footer.Information.RefundPolicy".Localized())</a></li>
+                        <li><a href="@Url.StaticPage("TermsConditions")">@("PP.Footer.Information.TermsAndConditions".Localized())</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="footer-widget">
+                    <h5>@("PP.Footer.Account".Localized())</h5>
+                    <ul>
+                        <li><a href="@Url.UserProfile(tab: "")">@("PP.Footer.Account.MyProfile".Localized())</a></li>
+                        <li><a href="@Url.UserProfile(tab: "orders")">@("PP.Footer.Account.MyOrders".Localized())</a></li>
+                        <li><a href="@Url.OrderTrack()">@("PP.Footer.Account.TrackOrder".Localized())</a></li>
+                        <li><a href="@Url.Cart()">@("PP.Footer.Account.MyCart".Localized())</a></li>
+                        <li><a href="@Url.Checkout()">@("PP.Footer.Account.Checkout".Localized())</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-2">
+                <div class="footer-widget">
+                    <h5 style="color: #ffffff; font-weight: 600; border-bottom: 2px solid #ffc107; padding-bottom: 8px; margin-bottom: 12px;">
+                        👥 Team Members
+                    </h5>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="color: #dcdcdc; margin-bottom: 6px;">Muhamed Hamed</li>
+                        <li style="color: #dcdcdc; margin-bottom: 6px;">Adham Assem</li>
+                        <li style="color: #dcdcdc; margin-bottom: 6px;">Mohand Sadek</li>
+                        <li style="color: #dcdcdc; margin-bottom: 6px;">Ahmed Elsebakhy</li>
+                        <li style="color: #dcdcdc; margin-bottom: 6px;">Mohamed Fathy</li>
+                        <li style="color: #dcdcdc;">Yousef Elabher</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright-reserved" style="display:block">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 copyrights-widget">
+                    <div class="copyright-text d-flex flex-wrap align-items-center justify-content-between text-white" style="gap: 10px;">
+                        <div>
+                            <i title="Copyrights" class="fas fa-copyright dont-transform text-warning"></i>
+                            @Html.Raw("PP.Footer.All Rights Has Reserved".LocalizedString().Replace("{application}", "<a href='" + Url.Home() + "'>" + ConfigurationsHelper.ApplicationName + "</a>").Replace("{date}", DateTime.Now.Year.ToString()))
+                        </div>
+                        <div style="font-weight: bold; color: #ffc107;">
+                            Click Cart Team
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

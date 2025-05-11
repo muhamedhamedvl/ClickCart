@@ -1,0 +1,362 @@
+﻿@using Microsoft.AspNet.Identity
+@using eCommerce.Entities
+@model eCommerce.Web.Areas.Dashboard.ViewModels.OrderDetailsViewModel
+
+@if (Model != null && Model.Order != null)
+{
+    var i = 0;
+    var orderStatus = Model.Order.OrderHistory.OrderByDescending(x => x.ModifiedOn).FirstOrDefault();
+
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-light lead">
+                @("Dashboard.OrderDetails.OrderStatus".Localized())
+            </li>
+            <li class="list-group-item p-0">
+                <table class="table table-borderless table-hover text-center mb-0">
+                    <tbody>
+                        @if (orderStatus != null)
+                        {
+                            <tr>
+                                <td style="width:50%;">
+                                    @("Dashboard.OrderDetails.OrderStatus".Localized()):
+                                </td>
+                                <td style="width:50%;">
+                                    <h4 class="m-0">
+                                        <span class="badge badge-secondary @Html.getCellBackgroundClassByOrderStatus((OrderStatus)orderStatus.OrderStatus)">
+                                            @(string.Format("Dashboard.Orders.OrderStatus." + ((OrderStatus)orderStatus.OrderStatus).ToString()).LocalizedString())
+                                        </span>
+                                    </h4>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td style="width:50%;">
+                                @("Dashboard.OrderDetails.PaymentMethod".Localized()):
+                            </td>
+                            <td style="width:50%;">
+                                @(("Dashboard.OrderDetails.PaymentMethods." + ((PaymentMethods)Model.Order.PaymentMethod).ToString()).LocalizedString())
+                            </td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Order.TransactionID))
+                        {
+                            <tr>
+                                <td style="width:50%;">
+                                    @("Dashboard.OrderDetails.OrderTransactionID".Localized()):
+                                </td>
+                                <td style="width:50%;">
+                                    @if (Model.Order.PaymentMethod == (int)PaymentMethods.CreditCard)
+                                    {
+                                        <span>
+                                            @("Dashboard.OrderDetails.OrderProcessor.AuthorizeNet".Localized())
+                                        </span>
+                                    }
+                                    else if (Model.Order.PaymentMethod == (int)PaymentMethods.PayPal)
+                                    {
+                                        <span>
+                                            @("Dashboard.OrderDetails.OrderProcessor.PayPal".Localized())
+                                        </span>
+                                    }
+
+                                    @Model.Order.TransactionID
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td style="width:50%;">
+                                @("Dashboard.OrderDetails.PlacedOn".Localized()):
+                            </td>
+                            <td style="width:50%;">
+                                @Model.Order.PlacedOn
+                            </td>
+                        </tr>
+                        @if (orderStatus != null && !(orderStatus.ModifiedOn.Equals(Model.Order.PlacedOn)))
+                        {
+                            <tr>
+                                <td style="width:50%;">
+                                    @("Dashboard.OrderDetails.UpdatedOn".Localized()):
+                                </td>
+                                <td style="width:50%;">
+                                    @(orderStatus.ModifiedOn)
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td style="width:50%;">
+                                @("Dashboard.OrderDetails.OrderID".Localized()):
+                            </td>
+                            <td style="width:50%;">
+                                @(Model.Order.ID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                @("Dashboard.OrderDetails.OrderUniqueCode".Localized()):
+                            </td>
+                            <td style="width:50%;">
+                                @Model.Order.OrderCode
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+            <li class="list-group-item bg-light lead">
+                @("Dashboard.OrderDetails.OrderDetails".Localized())
+            </li>
+            <li class="list-group-item p-0">
+                <table class="table table-hover m-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">@("Dashboard.OrderDetails.Name".Localized())</th>
+                            <th scope="col">@("Dashboard.OrderDetails.Price".Localized())</th>
+                            <th scope="col">@("Dashboard.OrderDetails.Quantity".Localized())</th>
+                            <th scope="col">@("Dashboard.OrderDetails.Total".Localized())</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var orderItem in Model.Order.OrderItems)
+                        {
+                            var currentLanguageProductRecord = orderItem.Product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            i++;
+
+                            <tr>
+                                <th scope="row">@i</th>
+                                <td>
+                                    <a class="text-primary" href="@Url.ProductDetails(orderItem.Product.Category.SanitizedName, orderItem.ProductID)" target="_blank">
+                                        @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                                    </a>
+                                </td>
+                                <td>
+                                    @orderItem.ItemPrice.WithCurrency()
+                                </td>
+                                <td>
+                                    @orderItem.Quantity
+                                </td>
+                                <td>
+                                    @((orderItem.ItemPrice * orderItem.Quantity).WithCurrency())
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-right">
+                                <strong>@("Dashboard.OrderDetails.TotalAmount".Localized())</strong>
+                            </td>
+                            <td colspan="1">
+                                <span>
+                                    @Model.Order.TotalAmmount.WithCurrency()
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right">
+                                <strong>@("Dashboard.OrderDetails.Discount".Localized())</strong>
+                            </td>
+                            <td colspan="1">
+                                <span>
+                                    @Model.Order.Discount.WithCurrency()
+                                </span>
+                                @if (Model.Order.Promo != null)
+                                {
+                                    <div class="alert alert-success mb-0 mt-1" role="alert">
+                                        @("Dashboard.OrderDetails.PromoApplied".LocalizedString().Replace("{promo}", Model.Order.Promo.Code))
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right">
+                                <strong>@("Dashboard.OrderDetails.DeliveryCharges".Localized())</strong>
+                            </td>
+                            <td colspan="1">
+                                <span>
+                                    @Model.Order.DeliveryCharges.WithCurrency()
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right">
+                                <strong>@("Dashboard.OrderDetails.Total".Localized())</strong>
+                            </td>
+                            <td colspan="1">
+                                <span>
+                                    @Model.Order.FinalAmmount.WithCurrency()
+                                </span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </li>
+            <li class="list-group-item bg-light lead">@("Dashboard.OrderDetails.CustomerDetails".Localized())</li>
+            <li class="list-group-item">
+                <form>
+                    @if (Model.Order.IsGuestOrder)
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label text-left">
+                                <span class="badge badge-success">@("Dashboard.OrderDetails.GuestOrder".LocalizedString())</span>
+                            </label>
+                        </div>
+                    }
+                    
+                    @if(Model.Customer != null)
+                    {
+                        <div class="form-group row">
+                            <div class="small col-sm-12 col-form-label text-left">
+                                <a href="@Url.Orders(Model.Customer.Id)" target="_blank">@("Dashboard.OrderDetails.SeeAllOrdersFromCustomer".LocalizedString())</a>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.FullName".Localized())</label>
+                        <div class="col-sm-10">
+                            <input name="FullName" type="text" class="form-control disabled" value="@Model.Order.CustomerName" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.Email".Localized())</label>
+                        <div class="col-sm-10 text-left">
+                            <input name="Email" type="email" class="form-control disabled" value="@Model.Order.CustomerEmail" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.PhoneNumber".Localized())</label>
+                        <div class="col-sm-10">
+                            <input name="PhoneNumber" type="text" class="form-control disabled" value="@Model.Order.CustomerPhone" disabled>
+                        </div>
+                    </div>
+                </form>
+            </li>
+            <li class="list-group-item bg-light lead">@("Dashboard.OrderDetails.ShippingDetails".Localized())</li>
+            <li class="list-group-item">
+                <form>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.Country".Localized())</label>
+                        <div class="col-sm-10">
+                            <input name="Country" type="text" value="@Model.Order.CustomerCountry" class="form-control disabled" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.City".Localized())</label>
+                        <div class="col-sm-10">
+                            <input name="City" type="text" value="@Model.Order.CustomerCity" class="form-control disabled" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.Address".Localized())</label>
+                        <div class="col-sm-10">
+                            <textarea name="Address" class="form-control disabled" disabled>@Model.Order.CustomerAddress</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">@("Dashboard.OrderDetails.ZipCode".Localized())</label>
+                        <div class="col-sm-10">
+                            <input name="ZipCode" type="text" value="@Model.Order.CustomerZipCode" class="form-control disabled" disabled>
+                        </div>
+                    </div>
+                </form>
+            </li>
+            @if (Model.Order.OrderHistory != null)
+            {
+                <li class="list-group-item bg-light lead">
+                    @("Dashboard.OrderDetails.OrderHistory".Localized())
+                </li>
+                <li class="list-group-item">
+                    <div class="row text-left">
+                        <div class="col col-md-6 border-right">
+                            @foreach (var historyItem in Model.Order.OrderHistory.OrderByDescending(x => x.ModifiedOn))
+                            {
+                                <blockquote class="blockquote">
+                                    <p class="mb-0">
+                                        <span class="badge badge-secondary @Html.getCellBackgroundClassByOrderStatus((OrderStatus)historyItem.OrderStatus)">
+                                            @(("Dashboard.Orders.OrderStatus." + (((OrderStatus)historyItem.OrderStatus)).ToString()).Localized())
+                                        </span>
+                                        - @historyItem.Note
+                                    </p>
+                                    <footer class="blockquote-footer">@historyItem.ModifiedOn</footer>
+                                </blockquote>
+                                <hr />
+                            }
+                        </div>
+                        <div class="col col-md-6">
+                            <form id="updateStatusForm">
+                                <div class="form-group">
+                                    <label>@("Dashboard.Orders.OrderStatus".Localized())</label>
+                                    <select class="form-control" name="OrderStatus">
+                                        @foreach (var _orderStatus in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                                        {
+                                            <option value="@((int)_orderStatus)">
+                                                @(("Dashboard.Orders.OrderStatus." + _orderStatus.ToString()).Localized())
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>@("Dashboard.OrderDetails.Note".Localized())</label>
+                                    <textarea class="form-control" name="Note" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="updateStatusButton">@("Dashboard.OrderDetails.UpdateStatus".Localized())</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<script>
+    $("#updateStatusForm").validate({
+        errorClass: "alert alert-danger",
+        errorElement: "div",
+        rules: {
+            Note: {
+                required: true,
+                minlength: 15,
+                maxlength: 300
+            }
+        },
+        messages: {
+            Note: {
+                required: "@("Dashboard.OrderDetails.UpdateStatus.Validation.NoteRequired".Localized())",
+                minlength: "@("Dashboard.OrderDetails.UpdateStatus.Validation.NoteMinimumLength".LocalizedString().Replace("{min}", "15"))",
+                maxlength: "@("Dashboard.OrderDetails.UpdateStatus.Validation.NoteMaximumLength".LocalizedString().Replace("{max}", "300"))"
+            }
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+
+    $("#updateStatusButton").click(function () {
+        if ($("#updateStatusForm").valid()) {            
+            addLoader("updateStatusForm");
+
+            $.ajax({
+				url: "@Url.EditAction("Orders", Model.Order.ID)",
+                type: "post",
+                data: $("#updateStatusForm").serialize()
+			})
+            .done(function (response) {
+                if (response != null && response.Success != undefined && response.Success) {
+                    window.location.reload();
+			    }
+                else {
+                    removeLoader("updateStatusForm");
+
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+			    }
+			})
+            .fail(function () {
+                removeLoader("updateStatusForm");
+                Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	    });
+        }
+    });
+</script>

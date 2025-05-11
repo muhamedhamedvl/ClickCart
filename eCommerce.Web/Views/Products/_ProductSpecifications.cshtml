@@ -1,0 +1,22 @@
+﻿@model List<ProductSpecification>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="specification-table table-responsive">
+        <table class="table table-borderless table-striped">
+            <tbody>
+                @foreach (var productSpecification in Model)
+                {
+                    <tr>
+                        <td>
+                            @productSpecification.Title
+                        </td>
+                        <td>
+                            @productSpecification.Value
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

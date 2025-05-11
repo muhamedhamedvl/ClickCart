@@ -1,0 +1,155 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared.Helpers
+@model eCommerce.Web.ViewModels.UserOrdersViewModel
+
+@if (Model != null && Model.UserOrders != null && Model.UserOrders.Count > 0)
+{
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr>
+                @*<th>
+                    @("Dashboard.UserDetails.Orders.OrderID".Localized())
+                </th>*@
+                <th>
+                    @("Dashboard.UserDetails.Orders.PlacedOnDate".Localized())
+                </th>
+                <th>
+                    @("Dashboard.UserDetails.Orders.OrderAmount".Localized())
+                </th>
+                <th>
+                    @("Dashboard.UserDetails.Orders.PaymentMethod".Localized())
+                </th>
+                <th>
+                    @("Dashboard.UserDetails.Orders.Status".Localized())
+                </th>
+                <th>
+                    @("Dashboard.UserDetails.Orders.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.UserOrders)
+            {
+                var orderCurrentHistory = order.OrderHistory.OrderByDescending(x => x.ModifiedOn).FirstOrDefault();
+
+                <tr>
+                    @*<td>
+                        @order.ID
+                    </td>*@
+                    <td>
+                        @order.PlacedOn
+                    </td>
+                    <td>
+                        @order.FinalAmmount
+                    </td>
+                    <td>
+                        @(("Dashboard.UserDetails.Orders.PaymentMethods." + ((PaymentMethods)order.PaymentMethod).ToString()).Localized())
+                    </td>
+                    @if (orderCurrentHistory != null)
+                    {
+                        <td class="@Html.getCellBackgroundClassByOrderStatus((OrderStatus)orderCurrentHistory.OrderStatus)">
+                            <span>
+                                @(("Dashboard.UserDetails.Orders.OrderStatus." + ((OrderStatus)orderCurrentHistory.OrderStatus).ToString()).Localized())
+                            </span>
+                            <br />
+                            <div class="small">
+                                @("Dashboard.UserDetails.Orders.UpdatedOn".Localized()): @orderCurrentHistory.ModifiedOn
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <span>-</span>
+                        </td>
+                    }
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-primary" href="@Url.DetailsAction("Orders", order.ID)">
+                                <i class="fas fa-shopping-cart mr-1"></i>
+                                @("Dashboard.UserDetails.Orders.Details".Localized())
+                            </a>
+                            <a class="btn btn-warning" href="@Url.OrderTrack(order.ID.ToString())" target="_blank">
+                                <i class="fas fa-search-location mr-1"></i>
+                                @("Dashboard.UserDetails.Orders.Track".Localized())
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link pointerCursor" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrdersList(Model.UserID, Model.OrderID, Model.OrderStatus, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrdersList(Model.UserID, Model.OrderID, Model.OrderStatus, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link pointerCursor" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="datalink page-link pointerCursor" data-href="@Url.UserOrdersList(Model.UserID, Model.OrderID, Model.OrderStatus, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        @("Dashboard.UserDetails.Orders.NoOrdersFound".Localized())
+    </div>
+}
+
+<script>
+    $(".datalink").click(function () {
+        var url = $(this).attr("data-href");
+
+        if (url != undefined && url != "") {
+            addLoader("response-holder");
+
+            $.ajax({
+                url: url,
+            })
+            .done(function (response) {
+                $("#response-holder").html(response);
+                 removeLoader("response-holder");
+            })
+            .fail(function () {
+                 removeLoader("response-holder");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		    });
+        }
+    });
+</script>

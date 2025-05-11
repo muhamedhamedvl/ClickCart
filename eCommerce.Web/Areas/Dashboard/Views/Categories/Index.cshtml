@@ -1,0 +1,61 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.CategoriesListingViewModel
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Categories.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Categories.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Categories");
+        Model.PageImageURL = PictureHelper.PageImageURL("categories.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Categories")">
+            <div class="input-group">
+                <input name="searchTerm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Categories.SearchPlaceholder".Localized())">
+                <select class="form-control custom-select" name="parentCategoryID">
+                    <option value="0">
+                        @("Dashboard.Categories.SelectParentCategory".Localized())
+                    </option>
+                    @foreach (var category in Model.ParentCategories)
+                    {
+                        var selected = category.ID == Model.ParentCategoryID ? "selected" : string.Empty;
+
+                        var languageBasedCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                        if (languageBasedCategoryRecord != null)
+                        {
+                            <option value="@category.ID" @selected>
+                                @languageBasedCategoryRecord.Name
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@category.ID" @selected>
+                                @category.SanitizedName
+                            </option>
+                        }
+                    }
+                </select>
+
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Categories.Search".Localized())</button>
+                <a href="@Url.ListAction("Categories")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Categories.Reset".Localized())</a>
+                <a href="@Url.CreateAction("Categories")" role="button" class="form-control btn btn-success"><i class="fas fa-plus"></i> @("Dashboard.Categories.CreateCategory".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>

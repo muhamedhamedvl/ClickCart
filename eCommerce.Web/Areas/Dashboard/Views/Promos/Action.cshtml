@@ -1,0 +1,241 @@
+﻿@model PromoActionViewModel
+@{
+    if (Model != null)
+    {
+        if (Model.ID > 0)
+        {
+            Model.PageTitle = "Dashboard.Promos.EditPromoTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Promos.EditPromoDescription".LocalizedString();
+            Model.PageURL = Url.EditAction("Promos", Model.ID);
+        }
+        else
+        {
+            Model.PageTitle = "Dashboard.Promos.CreatePromoTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Promos.CreatePromoDescription".LocalizedString();
+            Model.PageURL = Url.CreateAction("Promos");
+        }
+
+        Model.PageImageURL = PictureHelper.PageImageURL("promos.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder mb-4">
+    <form id="actionForm" method="post">
+        <input type="hidden" name="ID" value="@Model.ID" />
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.Name".Localized())
+            </label>
+            <input class="form-control" name="Name" value="@Model.Name" placeholder="@("Dashboard.Promos.Action.NamePlaceholder".Localized())" />
+        </div>
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.Description".Localized())
+            </label>
+            <textarea class="form-control" name="Description" placeholder="@("Dashboard.Promos.Action.DescriptionPlaceholder".Localized())" rows="3">@Model.Description</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.Code".Localized())
+            </label>
+            <input class="form-control" name="Code" value="@Model.Code" placeholder="@("Dashboard.Promos.Action.CodePlaceholder".Localized())" />
+        </div>
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.PromoType".Localized())
+            </label>
+            <select class="form-control" name="PromoType" id="PromoType">
+                @foreach (var _promoType in Enum.GetValues(typeof(PromoTypes)).Cast<PromoTypes>())
+                {
+                    var selected = Model.PromoType == (int)_promoType ? "selected" : string.Empty;
+                    <option value="@((int)_promoType)" @selected>
+                        @(("Dashboard.Promos.PromoTypes." + _promoType.ToString()).Localized())
+                    </option>
+                }
+            </select>
+            <div rel-promotype="@((int)PromoTypes.Amount)" class="alert alert-info mt-2" role="alert" style="@(Model.PromoType == ((int)PromoTypes.Amount) ? string.Empty : "display:none")">
+                @("Dashboard.Promos.Action.AmountPromoDescription".Localized())
+            </div>
+            <div rel-promotype="@((int)PromoTypes.Percentage)" class="alert alert-warning mt-2" role="alert" style="@(Model.PromoType == ((int)PromoTypes.Percentage) ? string.Empty : "display:none")">
+                @("Dashboard.Promos.Action.PercentagePromoDescription".Localized())
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.Value".Localized())
+            </label>
+            <input class="form-control" name="Value" value="@Model.Value" />
+        </div>
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Promos.Action.ValidTill".Localized())
+            </label>
+            <input class="form-control" name="ValidTill" value="@Model.ValidTill" autocomplete="off" />
+        </div>
+
+        <hr />
+        <div class="form-group mb-0">
+            @if (Model.ID > 0)
+            {
+                <button class="btn btn-success" type="submit" id="actionButton">
+                    <i class="fas fa-edit mr-1"></i>
+                    @("Dashboard.Promos.Update".Localized())
+                </button>
+                <button class="deleteButton btn btn-danger" type="button" data-id="@Model.ID">
+                    <i class="fas fa-trash-alt mr-1"></i>
+                    @("Dashboard.Promos.Delete".Localized())
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-success" type="submit" id="actionButton">
+                    <i class="fas fa-plus mr-1"></i>
+                    @("Dashboard.Promos.Save".Localized())
+                </button>
+            }
+            <a class="btn btn-secondary" href="@Url.ListAction("Promos")">
+                <i class="fas fa-angle-double-left mr-1"></i>
+                @("Dashboard.Promos.Cancel".Localized())
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    $("#PromoType").change(function () {
+        $('[rel-promotype]').hide();
+        $('[rel-promotype=' + $(this).val() + ']').show();
+    });
+
+    $('input[name="ValidTill"]').datepicker();
+
+    $("#actionForm").validate({
+        errorClass: "alert alert-danger",
+        errorElement: "div",
+        rules: {
+            Name: {
+                required: true,
+                minlength: 5,
+                maxlength: 150
+            },
+            PromoType: {
+                required: true
+            },
+            Description: {
+                minlength: 20
+            },
+            Code: {
+                required: true,
+                minlength: 1,
+                maxlength: 50
+            },
+            Value: {
+                required: true,
+                range: [1, 10000000]
+            }
+        },
+        messages: {
+            Name: {
+                required: "@("Dashboard.Promos.Action.Validation.NameRequired".Localized())",
+				minlength: "@("Dashboard.Promos.Action.Validation.NameMinimumLength".Localized().ToString().Replace("{min}", "15"))",
+				maxlength: "@("Dashboard.Promos.Action.Validation.NameMaximumLength".Localized().ToString().Replace("{max}", "150"))"
+            },
+            PromoType: {
+                required: "@("Dashboard.Promos.Action.Validation.PromoTypeRequired".Localized())",
+            },
+            Description: {
+				minlength: "@("Dashboard.Promos.Action.Validation.DescriptionMinimumLength".Localized().ToString().Replace("{min}", "20"))",
+            },
+            Code: {
+                required: "@("Dashboard.Promos.Action.Validation.CodeRequired".Localized())",
+				minlength: "@("Dashboard.Promos.Action.Validation.CodeMinimumLength".Localized().ToString().Replace("{min}", "1"))",
+				maxlength: "@("Dashboard.Promos.Action.Validation.CodeMaximumLength".Localized().ToString().Replace("{max}", "50"))"
+            },
+            Value: {
+                required: "@("Dashboard.Promos.Action.Validation.ValueRequired".Localized())",
+				range: "@("Dashboard.Promos.Action.Validation.ValueRange".LocalizedString().Replace("{min}", "1").Replace("{max}", "10000000"))"
+            }
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+
+    $("#actionForm").submit(function (e) {
+        if ($("#actionForm").valid()) {
+            addLoader("actionForm");
+            $.ajax({
+                type: "post",
+                data: $("#actionForm").serialize()
+			})
+            .done(function (response) {
+                if (response.Success) {
+                    window.location.href = "@Url.ListAction("Promos")";
+			    }
+			    else {
+                    removeLoader("actionForm");
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+			    }
+			})
+            .fail(function () {
+                 removeLoader("actionForm");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			});
+        }
+
+        e.preventDefault();
+    });
+
+    $(".deleteButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+            cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("actionForm");
+				$.ajax({
+					url: "@Url.DeleteAction("Promos")",
+                    type: "post",
+                    data: { id: recordID }
+				})
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+                        window.location.href = "@Url.ListAction("Promos")";
+				    }
+                    else {
+                        removeLoader("actionForm");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+				    }
+				})
+                .fail(function () {
+                     removeLoader("actionForm");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			    });
+            }
+        });
+    });
+</script>

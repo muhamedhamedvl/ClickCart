@@ -1,0 +1,72 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.RoleDetailsViewModel
+
+@if (Model != null && Model.Role != null)
+{
+    Model.PageTitle = "Dashboard.RoleDetails.Title".LocalizedString();
+    Model.PageDescription = "Dashboard.RoleDetails.Description".LocalizedString();
+    Model.PageURL = Url.RoleDetails(Model.Role.Id);
+    Model.PageImageURL = PictureHelper.PageImageURL("roles.jpg");
+
+    <div class="page-info-container">
+        <h3 class="h3 mb-2 text-gray-800">
+            @Model.PageTitle
+        </h3>
+        <p>
+            @Model.PageDescription
+        </p>
+        <hr />
+    </div>
+
+    <div class="page-data-holder mb-4">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="user-link nav-link active pointerCursor" data-href="@Url.RoleDetails(Model.Role.Id)">@("Dashboard.RoleDetails.Info".Localized())</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="user-link nav-link pointerCursor" data-href="@Url.RoleUsers(Model.Role.Id)">@("Dashboard.RoleDetails.Users".Localized())</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body" id="response-holder">
+                @{
+                    Html.RenderPartial("_RoleDetails", Model);
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(".user-link").click(function () {
+            var url = $(this).attr("data-href");
+
+            if (url != undefined && url != "") {
+                addLoader("response-holder");
+
+                var $selectedTab = $(this);
+
+                $.ajax({
+                    url: url,
+                })
+                .done(function (response) {                
+                    $(".user-link").removeClass("active");
+                    $selectedTab.addClass("active");
+
+                    $("#response-holder").html(response);
+                    removeLoader("response-holder");
+                })
+                .fail(function () {
+                     removeLoader("response-holder");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		    	});
+            }
+        });
+    </script>
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Roles.NoRolesFound".Localized())
+    </div>
+}

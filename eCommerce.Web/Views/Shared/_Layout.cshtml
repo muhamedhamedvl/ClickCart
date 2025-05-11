@@ -1,0 +1,34 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+@{
+	var baseModel = Model;
+
+	if (baseModel == null)
+	{
+		baseModel = new eCommerce.Web.ViewModels.PageViewModel();
+	}
+}
+
+<!DOCTYPE html>
+<html lang="@AppDataHelper.CurrentLanguage.ShortCode.ToLower()" @(AppDataHelper.IsRTL ? "dir=rtl" : string.Empty)>
+<head>
+    @Html.Partial("_MetaTags", baseModel)
+    
+    @Html.Partial("_HeaderStylesScripts")
+    @RenderSection("IncludeHeaderStylesScripts", false)
+</head>
+<body>
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    @Html.Partial("_Header")
+
+    @RenderBody()
+
+    @Html.Partial("_Footer")
+    @Html.Partial("_Variables")
+    @Html.Partial("_FooterStylesScripts")
+    @RenderSection("IncludeFooterStyleScripts", false)
+</body>
+</html>
+

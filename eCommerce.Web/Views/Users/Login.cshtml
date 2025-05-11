@@ -1,0 +1,28 @@
+﻿@model eCommerce.Web.ViewModels.LoginViewModel
+@{
+    Model.PageTitle = "PP.Login.Title".LocalizedString();
+    Model.PageDescription = "PP.Login.Description".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+    Model.PageURL = Url.Login();
+    Model.PageImageURL = PictureHelper.PageImageURL("login.jpg");
+}
+
+<div class="register-login-section spad">
+    <div class="container" id="login-container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="login-form page-content-holder">
+                    <div class="page-content-header">
+                        <h2>@Model.PageTitle</h2>
+                    </div>
+                    @Html.Partial("_Login", Model)
+                    <div class="switch-login">
+                        <a href="@Url.Register()" class="or-login">
+                            @("PP.Login.RegisterAccount".LocalizedString())
+                        </a>
+                    </div>
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = Model.ReturnUrl })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

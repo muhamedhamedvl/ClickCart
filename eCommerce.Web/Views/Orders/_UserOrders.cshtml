@@ -1,0 +1,54 @@
+﻿@model eCommerce.Web.ViewModels.UserOrdersViewModel
+
+<div class="row mt-2">
+    <div class="col-md-12">
+        <form id="searchUserOrdersForm">
+            <div class="input-group mb-3">
+                <input name="orderid" type="text" value="@Model.OrderID" class="form-control" placeholder="@("PP.UserProfile.UserOrders.OrderIDPlaceholder".Localized())">
+                <select class="form-control custom-select" name="orderStatus">
+                    <option value="0">@("PP.UserProfile.UserOrders.SelectByOrderStatus".Localized())</option>
+                    @foreach (var orderStatus in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                    {
+                        var selected = (int)orderStatus == Model.OrderStatus ? "selected" : string.Empty;
+
+                        <option value="@((int)orderStatus)" @selected>
+                            @(string.Format("PP.UserProfile.UserOrders.OrderStatus." + orderStatus.ToString()).LocalizedString())
+                        </option>
+                    }
+                </select>
+                <button type="button" id="searchUserOrdersButton" class="form-control btn btn-primary"><i class="fas fa-search mr-1"></i> @("PP.UserProfile.UserOrders.SearchOrders".Localized())</button>
+                <a data-href="@Url.UserOrders()" role="button" class="datalink text-white form-control btn btn-primary"><i class="fas fa-redo-alt mr-1"></i> @("PP.UserProfile.UserOrders.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12">
+        @{Html.RenderPartial("_OrdersListing", Model);}
+    </div>
+</div>
+
+<script>
+    $("#searchUserOrdersForm").submit(function (e) {
+        searchOrders();
+
+        e.preventDefault();
+    });
+
+    $("#searchUserOrdersButton").click(searchOrders);
+
+    function searchOrders() {
+        addLoader("response-holder");
+
+		$.ajax({
+			url: "@Url.UserOrders()",
+			method: "post",
+            data: $("#searchUserOrdersForm").serialize()
+		})
+		.done(function (response) {
+            $("#response-holder").html(response);
+            removeLoader("response-holder");
+		})
+		.fail(function () {
+             Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+		});
+    }
+</script>

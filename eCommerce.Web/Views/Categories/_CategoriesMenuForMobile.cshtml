@@ -1,0 +1,38 @@
+﻿@model CategoriesMenuViewModel
+
+@if (Model != null && Model.CategoryWithChildrens != null && Model.CategoryWithChildrens.Count > 0)
+{
+    <li>
+        @("PP.Header.Menu.Categories".Localized())
+        <ul id="cats">
+            @foreach (var categoryWithChildren in Model.CategoryWithChildrens)
+            {
+                var category = categoryWithChildren.Category;
+
+                var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                <li>
+                    <a href="@Url.SearchProducts(category.SanitizedName)">
+                        @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                    </a>
+
+                    @if (categoryWithChildren.Children != null && categoryWithChildren.Children.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var childCategory in categoryWithChildren.Children)
+                            {
+                                var currentLanguageChildCategoryRecord = childCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                                <li>
+                                    <a href="@Url.SearchProducts(childCategory.SanitizedName)">
+                                        @(currentLanguageChildCategoryRecord != null ? currentLanguageChildCategoryRecord.Name : string.Empty)
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        </ul>
+    </li>
+}

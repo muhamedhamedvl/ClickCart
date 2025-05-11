@@ -1,0 +1,48 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Web.Code;
+@model eCommerce.Web.ViewModels.FeaturedProductsViewModel
+
+<div class="">
+    @if (Model.Products != null && Model.Products.Count > 0)
+    {
+        foreach (var product in Model.Products)
+        {
+            var thumbnail = PictureHelper.GetProductThumbnail(product.ProductPictures, product.ThumbnailPictureID);
+            var sanitizedSEOTitle = AppDataHelper.CurrentLanguage.ShortCode == LanguagesHelper.EnglishLanguageShortCode && currentLanguageProductRecord != null ? currentLanguageProductRecord.Name.SanitizeLowerString() : string.Empty;
+
+            <div class="card mb-2">
+                <div class="p-4 d-flex align-items-center" style="height:350px;">
+                    <a href="@Url.ProductDetails(product.Category.Name.ToLower().SanitizeString(), product.ID)">
+                        @Html.Picture(thumbnail, "card-img-top", alt: product.Name)
+                    </a>
+                </div>
+                <hr />
+                <div class="card-body py-0">
+                    <h5 class="card-title">
+                        <span class="badge badge-success text-white mr-1">Featured</span>
+                        <a href="@Url.ProductDetails(product.Category.Name.ToLower().SanitizeString(), product.ID)">@product.Name</a>
+                    </h5>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-7">
+                            <label class="input-group-text border-0 bg-light ltr-dir" title="Product Price">
+                                <i class="fas fa-money-bill mr-1"></i> @product.Price.WithCurrency()
+                            </label>
+                        </div>
+                        <div class="col-5">
+                            <div class="input-group itemCartHolder">
+                                <input type="number" class="form-control productQuantity" value="1" min="1" max="100" title="Quantity">
+                                <div class="input-group-append">
+                                    <button data-id="@product.ID" type="button" class="btnAddToCart btn btn-primary" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart mr-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

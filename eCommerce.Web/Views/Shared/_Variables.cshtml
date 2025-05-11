@@ -1,0 +1,26 @@
+﻿@using Newtonsoft.Json;
+
+<script>    
+    var cartItems = @(Html.Raw(JsonConvert.SerializeObject(SessionHelper.CartItems)));
+    var darkModeEnabled = @(SessionHelper.DarkMode);
+
+    const DIR = '@(AppDataHelper.IsRTL ? "rtl" : "ltr")';
+    const ISRTL = DIR == 'rtl';
+    const CURRENCYSYMBOL = "@ConfigurationsHelper.CurrencySymbol";
+    const PRICECURRENCYPOSITION = "@ConfigurationsHelper.PriceCurrencyPosition.Replace("{currency}", ConfigurationsHelper.CurrencySymbol)";
+    const DIGITSAFTERDECIMAL = "@ConfigurationsHelper.DigitsAfterDecimalPoint";
+
+    const CARTURL = "@Url.Cart()";
+    const CARTFETCHURL = "@Url.Cart(isPopup: true)";
+    const ADDITEMTOCARTURL = "@Url.AddItemToCart()";
+    const GETCARTITEMSURL = "@Url.GetCartItems()";
+    const CHANGEMODEURL = "@Url.ChangeMode()";
+    const EXTERNALSOCIALSCRIPTSURL = "@Url.ExternalSocialScripts()";
+        
+    const RESOURCE_ADDINGPRODUCTTOCART = '@("PP.Shopping.ItemAddingToCart".Localized())';
+    const RESOURCE_ERRORHEADING = '@("PP.Message.Error".Localized())';
+    const RESOURCE_GENERICERRORMESSAGE = '@("PP.Message.GenericErrorMessage".Localized())';
+    const RESOURCE_MENULABEL = '@("PP.Menu".Localized())';
+    const RESOURCE_CATEGORIESLABEL = '@("PP.Header.Menu.Categories".Localized())';
+    const RESOURCE_MENUICON = '@(AppDataHelper.IsRTL ? "◄" : "►")';
+</script>

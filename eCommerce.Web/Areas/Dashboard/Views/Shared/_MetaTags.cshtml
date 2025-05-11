@@ -1,0 +1,28 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+
+@{
+    var title = Model.PageTitle + " " + (!string.IsNullOrEmpty(Model.PageTitle) ? "-" : "") + " " + ConfigurationsHelper.ApplicationName + " " + ("Dashboard.Dashboard").Localized() + "".Trim();
+}
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>@title</title>
+<meta name="description" content="@Model.PageDescription">
+<meta property="og:title" content="@title" />
+<meta property="og:description" content="@Model.PageDescription" />
+<meta property="og:url" content="@Model.PageURL" />
+<meta property="og:image" content="@Model.PageImageURL" />
+<meta property="og:type" content="website" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@ConfigurationsHelper.TwitterUsername" />
+<meta name="twitter:creator" content="@ConfigurationsHelper.TwitterUsername" />
+
+@foreach (var canonicalURL in Model.PageCanonicalURLs)
+{
+    <link rel="canonical" href="@canonicalURL" />
+}
+
+<meta name="robots" content="index, follow" />

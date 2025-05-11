@@ -1,0 +1,161 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.DashboardViewModel
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">
+            @("Dashboard.Dashboard.Hello".Localized().ToString().Replace("{user}", User.Identity.Name))
+        </h1>
+        <p class="lead">
+            @("Dashboard.Dashboard.WelcomeToDashboard".Localized().ToString().Replace("{application}", ConfigurationsHelper.ApplicationName))
+        </p>
+    </div>
+</div>
+<div>
+    <div>
+        @if (Model.ProductsWithLessStockQuantity != null && Model.ProductsWithLessStockQuantity.Count > 0)
+        {
+            foreach (var product in Model.ProductsWithLessStockQuantity)
+            {
+                var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                <div class="alert alert-warning mt-2" role="alert">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    @Html.Raw("Dashboard.Dashboard.LowStockAlert".Localized().ToString().Replace("{product-link}", @"<a href=""" + Url.ProductDetails(product.Category.SanitizedName, product.ID) + "\" target=\"_blank\">" + (currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Format("Product with ID {0}", product.ID)) + "</a>").Replace("{product-quantity}", product.StockQuantity.ToString()).Replace("{stock-alert-level}", "5"))
+                </div>
+            }
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.TotalProducts".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Products")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.ProductsCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-cubes fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-secondary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.TotalCategories".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Categories")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.CategoriesCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.TotalOrders".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Orders")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.OrdersCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-funnel-dollar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.TotalComments".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Comments")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.CommentsCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.NoOfUsers".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Users")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.UserCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            @("Dashboard.Dashboard.NoOfRoles".Localized())
+                        </div>
+                        <a class="card-body-heading-anchor" href="@Url.ListAction("Roles")">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.RolesCount
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users-cog fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

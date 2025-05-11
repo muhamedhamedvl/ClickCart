@@ -1,0 +1,243 @@
+﻿@using Microsoft.AspNet.Identity
+@using eCommerce.Entities
+@model eCommerce.Web.ViewModels.PrintInvoiceViewModel
+
+@if (Model != null && Model.Order != null)
+{
+    Model.PageTitle = "PP.PrintInvoice.Title".LocalizedString().Replace("{orderid}", Model.Order.ID.ToString());
+    Model.PageDescription = "PP.PrintInvoice.Description".LocalizedString();
+    Model.PageURL = Url.PrintInvoice(Model.Order.ID);
+    Model.PageImageURL = PictureHelper.PageImageURL("print-invoice.jpg");
+
+    var title = string.Format("{0} {1} {2}", Model.PageTitle, string.IsNullOrEmpty(Model.PageTitle) ? "" : "-", ConfigurationsHelper.ApplicationName).Replace("  ", " ").Trim();
+
+    var i = 0;
+    var orderStatus = Model.Order.OrderHistory.OrderByDescending(x => x.ModifiedOn).FirstOrDefault();
+
+    <html lang="@AppDataHelper.CurrentLanguage.ShortCode.ToLower()" @(AppDataHelper.IsRTL ? "dir=rtl" : string.Empty)>
+    <head>
+        <title>@title</title>
+        <meta name="description" content="@Model.PageDescription">
+
+        <meta property="og:title" content="@title" />
+        <meta property="og:description" content="@Model.PageDescription" />
+        <meta property="og:url" content="@Model.PageURL" />
+        <meta property="og:image" content="@Model.PageImageURL" />
+        <meta property="og:type" content="website" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@ConfigurationsHelper.TwitterUsername" />
+        <meta name="twitter:creator" content="@ConfigurationsHelper.TwitterUsername" />
+
+        @if (AppDataHelper.IsRTL)
+        {
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+            <link href="~/Content/lib/bootstrap-rtl-4.2.1/css/rtl/bootstrap.min.css" rel="stylesheet" />
+
+            <style>
+                body {
+                    font-family: Tajawal, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                }
+            </style>
+        }
+        else
+        {
+            <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+            <link href="~/Content/lib/bootstrap-4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+
+            <style>
+                body {
+                    font-family: Karla, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                }
+            </style>
+        }
+    </head>
+    <body>
+        <div class="container my-5">
+            <div class="row" id="invoice">
+                @if (Model.Order.IsGuestOrder || (User.Identity.IsAuthenticated && (Model.Order.CustomerID == User.Identity.GetUserId() || User.IsInRole("Administrator"))))
+                {
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body p-0">
+                                <div class="row p-5">
+                                    <div class="col-md-6">
+                                        <h3>
+                                            @ConfigurationsHelper.ApplicationName
+                                        </h3>
+                                        <div class="small">@Html.Raw(ConfigurationsHelper.AddressLine1 + "<br />" + ConfigurationsHelper.AddressLine2)</div>
+                                        <br />
+                                        <div class="small">@ConfigurationsHelper.PhoneNumber, @ConfigurationsHelper.MobileNumber</div>
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <h3>
+                                            @("PP.PrintInvoice.OrderID".Localized())# @Model.OrderID
+                                        </h3>
+                                        <p class="mb-1">
+                                            <span class="text-muted">@("PP.PrintInvoice.Dated".Localized()): </span> <span dir="ltr">@Model.Order.PlacedOn</span>
+                                        </p>
+                                        <p class="mb-1">
+                                            <span class="text-muted">@("PP.PrintInvoice.Status".Localized()): </span> @((OrderStatus)orderStatus.OrderStatus)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row pb-5 p-5">
+                                    <div class="col-md-6">
+                                        <p class="font-weight-bold mb-4">@("PP.PrintInvoice.CustomerInformation".Localized())</p>
+
+                                        @if (!Model.Order.IsGuestOrder)
+                                        {
+                                            <p class="mb-1">
+                                                @Model.Order.CustomerName
+                                            </p>
+                                            <p>
+                                                @Model.Order.CustomerEmail, @Model.Order.CustomerPhone
+                                                <br />
+                                                @Model.Order.CustomerAddress
+                                                <br />
+                                                @Model.Order.CustomerCity, @Model.Order.CustomerCountry
+                                                <br />
+                                                @Model.Order.CustomerZipCode
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p>
+                                                @("PP.PrintInvoice.GuestOrder".Localized())
+                                            </p>
+                                        }
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <p class="font-weight-bold mb-4">@("PP.PrintInvoice.PaymentDetails".Localized())</p>
+                                        <p class="mb-1">
+                                            <span class="text-muted">@("PP.PrintInvoice.PaymentMethod".Localized()): </span> @((PaymentMethods)Model.Order.PaymentMethod)
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(Model.Order.TransactionID))
+                                        {
+                                            <p class="mb-1">
+                                                <span class="text-muted">@("PP.PrintInvoice.TransactionID".Localized()): </span> @Model.Order.TransactionID
+                                            </p>
+                                        }
+                                        <p class="mb-1">
+                                            <span class="text-muted">@("PP.PrintInvoice.OrderID".Localized()): </span> @(Model.Order.ID)
+                                        </p>
+                                        <p class="mb-1">
+                                            <span class="text-muted">@("PP.PrintInvoice.Code".Localized()): </span> @(Model.Order.OrderCode)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row p-5">
+                                    <div class="col-md-12">
+                                        <table class="table text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border-0 text-uppercase small font-weight-bold">#</th>
+                                                    <th class="border-0 text-uppercase small font-weight-bold text-left">@("PP.PrintInvoice.Product".Localized())</th>
+                                                    <th class="border-0 text-uppercase small font-weight-bold">@("PP.PrintInvoice.Price".Localized())</th>
+                                                    <th class="border-0 text-uppercase small font-weight-bold">@("PP.PrintInvoice.Quantity".Localized())</th>
+                                                    <th class="border-0 text-uppercase small font-weight-bold">@("PP.PrintInvoice.Total".Localized())</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var orderItem in Model.Order.OrderItems)
+                                                {
+                                                    var currentLanguageProductRecord = orderItem.Product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                                                    i++;
+
+                                                    <tr>
+                                                        <td scope="row">@i</td>
+                                                        <td class="text-left">
+                                                            @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                                                        </td>
+                                                        <td dir="ltr">
+                                                            @orderItem.ItemPrice.WithCurrency()
+                                                        </td>
+                                                        <td>
+                                                            @orderItem.Quantity
+                                                        </td>
+                                                        <td class="ltr-dir" dir="ltr">
+                                                            @((orderItem.ItemPrice * orderItem.Quantity).WithCurrency())
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <hr />
+                                @if (Model.Order.Promo != null)
+                                {
+                                    <div class="d-flex flex-row-reverse px-4">
+                                        <div class="py-3 px-5 text-right">
+                                            <div class="font-weight-light">
+                                                @("PP.PrintInvoice.PromoApplied".LocalizedString().Replace("{promo}", Model.Order.Promo.Code))
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="d-flex flex-row-reverse p-4">
+                                    <div class="py-3 px-5 text-right">
+                                        <div class="mb-2">@("PP.PrintInvoice.TotalAmount".Localized())</div>
+                                        <div class="h2 font-weight-light ltr-dir" dir="ltr">
+                                            @Model.Order.TotalAmmount.WithCurrency()
+                                        </div>
+                                    </div>
+
+                                    <div class="py-3 px-5 text-right">
+                                        <div class="mb-2">@("PP.PrintInvoice.Discount".Localized())</div>
+                                        <div class="h2 font-weight-light ltr-dir" dir="ltr">
+                                            @Model.Order.Discount.WithCurrency()
+                                        </div>
+                                    </div>
+
+                                    <div class="py-3 px-5 text-right">
+                                        <div class="mb-2">@("PP.PrintInvoice.ShippingCharges".Localized())</div>
+                                        <div class="h2 font-weight-light ltr-dir" dir="ltr">
+                                            @Model.Order.DeliveryCharges.WithCurrency()
+                                        </div>
+                                    </div>
+
+                                    <div class="py-3 px-5 text-right">
+                                        <div class="mb-2">@("PP.PrintInvoice.FinalAmount".Localized())</div>
+                                        <div class="h2 font-weight-light ltr-dir" dir="ltr">
+                                            @Model.Order.FinalAmmount.WithCurrency()
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body p-0">
+                        <div class="alert alert-danger m-0 border-0" role="alert">
+                            @("PP.PrintInvoice.NotAccessible".LocalizedString())
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <script src="~/Content/lib/jquery-3.4.1/jquery.min.js"></script>
+        <script src="~/Content/lib/bootstrap-4.4.1/js/bootstrap.min.js"></script>
+
+        <script>
+            $(function () {
+                window.print();
+            });
+        </script>
+    </body>
+</html>
+}

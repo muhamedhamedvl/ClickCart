@@ -1,0 +1,100 @@
+﻿@using eCommerce.Entities
+@model eCommerce.Entities.Configuration
+
+<div class="modal-header">
+    <h5 class="modal-title">@("Dashboard.Configurations.EditConfiguration".Localized()) @(Model != null ? string.Format(": {0}", Model.Key.MakeWord()) : string.Empty)</h5>
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+@if (Model != null)
+{
+    <form id="editForm" method="post">
+        <div class="modal-body">
+            <input type="hidden" name="Key" value="@Model.Key" />
+            <input type="hidden" name="ConfigurationType" value="@Model.ConfigurationType" />
+            <input type="hidden" name="Description" value="@Model.Description" />
+
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="form-group mb-0">
+                    <label>
+                        @Model.Description
+                    </label>
+                </div>
+            }
+
+        <div class="form-group">
+            <label>
+                @("Dashboard.Configurations.Edit.Value".Localized())
+            </label>
+            <textarea class="form-control" name="Value" rows="3">@Model.Value</textarea>
+        </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                @("Dashboard.Configurations.Edit.Close".Localized())
+            </button>
+            <button class="btn btn-success" type="button" id="saveButton">
+                @("Dashboard.Configurations.Edit.Save".Localized())
+            </button>
+        </div>
+    </form>
+
+    <script>
+
+	    @*$("#editForm").validate({
+	    	errorClass: "alert alert-danger",
+	    	errorElement: "div",
+            rules: {
+                Value: {
+                    required: true,
+                }
+	    	},
+            messages: {
+                Value: {
+                    required: "@("Dashboard.Configurations.Edit.Validation.ConfigurationValueRequited".Localized())",
+                }
+	    	},
+	    	highlight: function (element, errorClass) {
+	    		$(element).removeClass(errorClass);
+	    	}
+	    });*@
+
+        $("#editForm").submit(function (e) { e.preventDefault(); updateConfiguration(); });
+	    $("#saveButton").click(updateConfiguration);
+
+        function updateConfiguration() {
+            if ($("#editForm").valid())
+		    {
+                addLoader("contentArea");
+
+		    	$.ajax({
+		    	    url: "@Url.EditAction("Configurations")",
+		    	    method: "post",
+		    	    data: $("#editForm").serialize()
+		    	})
+		    	.done(function (response) {
+                    if (response.Success) {
+                        $('#formModal').modal('toggle');
+                        window.location.href = "@Url.ListAction("Configurations")";
+                    }
+                    else {
+                        removeLoader("contentArea");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                    }
+		    	})
+                .fail(function () {
+                     removeLoader("contentArea");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		        });
+		    }
+        }
+    </script>
+}
+else
+{
+    <div class="alert alert-danger mb-0" role="alert">
+        @("Dashboard.Configurations.NoConfigurationFound".Localized())
+    </div>
+}

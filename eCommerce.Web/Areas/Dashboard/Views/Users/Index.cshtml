@@ -1,0 +1,47 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.UsersListingViewModel
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Users.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Users.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Users");
+        Model.PageImageURL = PictureHelper.PageImageURL("users.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Users")">
+            <div class="input-group">
+                <input name="searchTerm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Users.SearchPlaceholder".Localized())">
+                <select class="form-control custom-select" name="roleID">
+                    <option value="">
+                        @("Dashboard.Users.SelectByRole".Localized())
+                    </option>
+                    @foreach (var role in Model.Roles)
+                    {
+                        var selected = role.Id == Model.RoleID ? "selected" : string.Empty;
+
+                        <option value="@role.Id" @selected>@role.Name</option>
+                    }
+                </select>
+
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Users.Search".Localized())</button>
+                <a href="@Url.ListAction("Users")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Users.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>

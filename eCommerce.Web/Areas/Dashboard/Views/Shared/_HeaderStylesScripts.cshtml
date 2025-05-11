@@ -1,0 +1,17 @@
+﻿<!--Fontawesome fonts-->
+<link href="~/content/lib/fontawesome-free-5.13.0-web/css/all.min.css" rel="stylesheet" />
+
+@if (AppDataHelper.IsRTL)
+{
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+    @Styles.Render("~/bundles/dashboard/content/rtl/css")
+    @Scripts.Render("~/bundles/dashboard/content/scripts")
+}
+else
+{
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+
+    @Styles.Render("~/bundles/dashboard/content/css")
+    @Scripts.Render("~/bundles/dashboard/content/scripts")
+}

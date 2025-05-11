@@ -1,0 +1,54 @@
+﻿@using eCommerce.Entities
+@model eCommerce.Web.ViewModels.UserOrdersViewModel
+
+<div class="row mt-2">
+    <div class="col-md-12">
+        <form id="searchUserOrdersForm" method="post">
+            <div class="input-group mb-3">
+                <input name="orderid" type="text" value="@Model.OrderID" class="form-control" placeholder="@("Dashboard.UserDetails.Orders.SearchByOrderIDPlaceholder".Localized())">
+                <select class="form-control custom-select" name="orderStatus">
+                    <option value="0">@("Dashboard.UserDetails.Orders.SelectByOrderStatus".Localized())</option>
+                    @foreach (var orderStatus in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                    {
+                        var selected = (int)orderStatus == Model.OrderStatus ? "selected" : string.Empty;
+
+                        <option value="@((int)orderStatus)" @selected>@(("Dashboard.UserDetails.Orders.OrderStatus." + (orderStatus.ToString()).ToString()).Localized())</option>
+                    }
+                </select>
+                <button type="button" id="searchUserOrdersButton" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.UserDetails.Orders.Search".Localized())</button>
+                <a data-href="@Url.UserOrdersList(Model.UserID)" role="button" class="datalink text-white form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.UserDetails.Orders.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12">
+        @{Html.RenderPartial("_UserOrdersListing", Model);}
+    </div>
+</div>
+
+<script>
+    $("#searchUserOrdersForm").submit(function (e) {
+        searchUserOrders();
+
+        e.preventDefault();
+    });
+
+    $("#searchUserOrdersButton").click(searchUserOrders);
+
+    function searchUserOrders() {
+        addLoader("response-holder");
+
+		$.ajax({
+			url: "@Url.UserOrdersList(userID: Model.UserID)",
+			method: "post",
+            data: $("#searchUserOrdersForm").serialize()
+		})
+		.done(function (response) {
+            $("#response-holder").html(response);
+             removeLoader("response-holder");
+		})
+        .fail(function () {
+             removeLoader("response-holder");
+             Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		});
+    }
+</script>

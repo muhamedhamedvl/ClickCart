@@ -1,0 +1,46 @@
+﻿@model CategoriesMenuViewModel
+
+@if (Model != null && Model.CategoryWithChildrens != null && Model.CategoryWithChildrens.Count > 0)
+{
+    <div class="nav-depart">
+        <div class="depart-btn">
+            <i class="fas fa-bars"></i>
+            <span>@("PP.Header.Menu.Categories".Localized())</span>
+            <ul class="depart-hover">
+                @foreach (var categoryWithChildren in Model.CategoryWithChildrens)
+                {
+                    var category = categoryWithChildren.Category;
+
+                    var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                    <li>
+                        <a href="@Url.SearchProducts(category.SanitizedName)">
+                            @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+
+                            @if (categoryWithChildren.Children != null && categoryWithChildren.Children.Count > 0)
+                            {
+                                <i class="fas fa-angle-double-right ml-1 text-black-50"></i>
+                            }
+                        </a>
+
+                        @if (categoryWithChildren.Children != null && categoryWithChildren.Children.Count > 0)
+                        {
+                            <ul class="sub-menu">
+                                @foreach (var childCategory in categoryWithChildren.Children)
+                                {
+                                    var currentLanguageChildCategoryRecord = childCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                                    <li>
+                                        <a href="@Url.SearchProducts(childCategory.SanitizedName)">
+                                            @(currentLanguageChildCategoryRecord != null ? currentLanguageChildCategoryRecord.Name : string.Empty)
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

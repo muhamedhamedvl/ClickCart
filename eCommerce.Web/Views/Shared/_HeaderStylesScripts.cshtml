@@ -1,0 +1,14 @@
+﻿@if (AppDataHelper.IsRTL)
+{
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+    @Styles.Render("~/bundles/content/rtl/css")
+    @Scripts.Render("~/bundles/content/rtl/hscripts")
+}
+else
+{
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+
+    @Styles.Render("~/bundles/content/css")
+    @Scripts.Render("~/bundles/content/hscripts")
+}

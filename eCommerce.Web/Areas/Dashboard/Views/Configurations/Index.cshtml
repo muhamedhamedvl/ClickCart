@@ -1,0 +1,58 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.ConfigurationsListingViewModels
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Configurations.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Configurations.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Configurations");
+        Model.PageImageURL = PictureHelper.PageImageURL("configurations.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Configurations")">
+            <div class="input-group">
+                <input name="searchTerm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Configurations.SearchPlaceholder".Localized())">
+                <select class="form-control custom-select" name="configurationType">
+                    <option value="0">
+                        @("Dashboard.Configurations.SelectByConfigurationType".Localized())
+                    </option>
+                    @foreach (var configurationType in Enum.GetValues(typeof(ConfigurationTypes)).Cast<ConfigurationTypes>())
+                    {
+                        var selected = (int)configurationType == Model.ConfigurationType ? "selected" : string.Empty;
+
+                        <option value="@((int)configurationType)" @selected>@(("Dashboard.Configurations.ConfigurationTypes." + configurationType.ToString()).Localized())</option>
+                    }
+                </select>
+
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Configurations.Search".Localized())</button>
+                <a href="@Url.ListAction("Configurations")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Configurations.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>
+
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="contentArea">
+        </div>
+    </div>
+</div>
+
+<div id="sliderTemplate" style="display:none">
+    @Html.Picture(new Picture(), "image img-thumbnail", "width: 100%", "Home Slider")
+</div>

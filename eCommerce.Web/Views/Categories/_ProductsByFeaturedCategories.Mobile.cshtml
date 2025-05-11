@@ -1,0 +1,33 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared
+@model eCommerce.Web.ViewModels.ProductsByFeaturedCategoriesViewModel
+
+@if (Model != null && Model.Categories != null && Model.Categories.Count > 0)
+{
+    foreach (var featuredCategory in Model.Categories)
+    {
+        var currentLanguageCategoryRecord = featuredCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+        
+        var products = featuredCategory.Products != null ? featuredCategory.Products.Where(x=>!x.IsDeleted && x.IsActive).OrderByDescending(x=>x.ModifiedOn).Take(8).ToList() : null;
+
+        <section class="forward-banner spad">
+            <div class="container-fluid px-0">
+                <div class="row">
+                    <div class="col-lg-4" title="@("PP.Home.FeaturedCategories.BrowseCategoryProducts".LocalizedString().Replace("{category}", currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty))">
+                        <div class="product-large set-bg d-flex justify-content-center align-items-center" data-setbg="@Html.PictureSource(picture: featuredCategory.Picture, defaultPic: "site/default-bg.jpg")">
+                            <div>
+                                <h2>
+                                    @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                                </h2>
+                                <a href="@Url.SearchProducts(category:featuredCategory.SanitizedName)">@("PP.Home.FeaturedCategories.DiscoverMoreProducts".Localized())</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        @{ Html.RenderPartial("_ProductsSlider", products); }
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+}

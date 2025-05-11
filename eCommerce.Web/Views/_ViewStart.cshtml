@@ -1,0 +1,8 @@
+﻿@{
+    string action = (string)ViewContext.Controller.ValueProvider.GetValue("action").RawValue.ToString().ToLower().Trim();
+    string controller = (string)ViewContext.RouteData.Values["Controller"].ToString().ToLower().Trim();
+    var viewMobileName = "~/Views/" + controller + "/" + action + ".Mobile.cshtml";
+    ViewEngineResult result = ViewEngines.Engines.FindView(ViewContext.Controller.ControllerContext, viewMobileName, null);
+    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}

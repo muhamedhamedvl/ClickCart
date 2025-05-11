@@ -1,0 +1,60 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.ProductsListingViewModel
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Products.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Products.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Products");
+        Model.PageImageURL = PictureHelper.PageImageURL("products.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Products")">
+            <div class="input-group">
+                <input name="searchterm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Products.SearchPlaceholder".Localized())">
+                <select class="form-control custom-select" name="categoryid">
+                    <option value="">@("Dashboard.Products.SelectByCategory".Localized())</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                        var selected = category.ID == Model.CategoryID ? "selected" : string.Empty;
+
+                        if (currentLanguageCategoryRecord != null)
+                        {
+                            <option value="@category.ID" @selected>@currentLanguageCategoryRecord.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@category.ID" @selected>@category.SanitizedName</option>
+                        }
+                    }
+                </select>
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Products.Search".Localized())</button>
+                <a href="@Url.ListAction("Products")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Products.Reset".Localized())</a>
+                <a href="@Url.CreateAction("Products")" role="button" class="form-control btn btn-success"><i class="fas fa-plus"></i> @("Dashboard.Products.CreateProduct".Localized())</a>
+            </div>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" value="true" name="showOnlyLowStock" id="showOnlyLowStock" @(Model.ShowOnlyLowStock.HasValue && Model.ShowOnlyLowStock.Value ? "checked" : string.Empty)>
+                <label class="form-check-label" for="showOnlyLowStock">
+                    @("Dashboard.Products.ShowOnlyLowStock".Localized())
+                </label>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>

@@ -1,0 +1,104 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "PP.Home.Title".LocalizedString();
+        Model.PageDescription = "PP.Home.Description".LocalizedString();
+        Model.PageURL = Url.Home();
+        Model.PageImageURL = PictureHelper.PageImageURL("home.jpg");
+    }
+
+    Html.RenderAction("HomeSliders", "Home");
+    <br />
+    Html.RenderAction("ProductsByFeaturedCategories", "Categories", new { recordSize = 3 });
+}
+
+<div class="container-fluid my-4 pb-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="loading-more">
+                <i class="fas fa-search"></i>
+                <a href="@Url.SearchProducts()">
+                    @("PP.Home.SearchMoreProducts".LocalizedString())
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (true)
+{
+    <section class="latest-blog spad py-0">
+        <div class="benefit-items">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="single-benefit">
+                            <div class="sb-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <div class="sb-text">
+                                <h6>@("PP.Home.Showcase.FastDelivery".LocalizedString())</h6>
+                                <p>@("PP.Home.Showcase.OnTimeDelivery".LocalizedString())</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="single-benefit">
+                            <div class="sb-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="sb-text">
+                                <h6>@("PP.Home.Showcase.247Support".LocalizedString())</h6>
+                                <p>@("PP.Home.Showcase.AlwaysReadyToHelp".LocalizedString())</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="single-benefit border-0">
+                            <div class="sb-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="sb-text">
+                                <h6>@("PP.Home.Showcase.SecurePayments".LocalizedString())</h6>
+                                <p>@("PP.Home.Showcase.SecurePaymentOptions".LocalizedString())</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="partner-logo" title="@("PP.Home.Showcase.OurPartners".LocalizedString())">
+        <div class="container">
+            <div class="logo-carousel owl-carousel">
+                <div class="logo-item">
+                    <div class="tablecell-inner">
+                        <img src="~/Content/templates/fashi/img/logo-carousel/logo-1.png" alt="">
+                    </div>
+                </div>
+                <div class="logo-item">
+                    <div class="tablecell-inner">
+                        <img src="~/Content/templates/fashi/img/logo-carousel/logo-2.png" alt="">
+                    </div>
+                </div>
+                <div class="logo-item">
+                    <div class="tablecell-inner">
+                        <img src="~/Content/templates/fashi/img/logo-carousel/logo-1.png" alt="">
+                    </div>
+                </div>
+                <div class="logo-item">
+                    <div class="tablecell-inner">
+                        <img src="~/Content/templates/fashi/img/logo-carousel/logo-2.png" alt="">
+                    </div>
+                </div>
+                <div class="logo-item">
+                    <div class="tablecell-inner">
+                        <img src="~/Content/templates/fashi/img/logo-carousel/logo-1.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

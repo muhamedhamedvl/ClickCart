@@ -1,0 +1,47 @@
+﻿@using eCommerce.Entities
+@model eCommerce.Web.Areas.Dashboard.ViewModels.OrdersListingViewModel
+
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Orders.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Orders.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Orders");
+        Model.PageImageURL = PictureHelper.PageImageURL("orders.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Orders")">
+            <div class="input-group">
+                <input name="UserID" type="text" value="@Model.UserID" class="form-control" placeholder="@("Dashboard.Orders.SearchByUserIDPlaceholder".Localized())">
+                <input name="orderid" type="text" value="@Model.OrderID" class="form-control" placeholder="@("Dashboard.Orders.SearchByOrderIDPlaceholder".Localized())">
+                <select class="form-control custom-select" name="orderStatus">
+                    <option value="">@("Dashboard.Orders.SearchByOrderStatus".Localized())</option>
+                    @foreach (var orderStatus in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                    {
+                        var selected = (int)orderStatus == Model.OrderStatus ? "selected" : string.Empty;
+
+                        <option value="@((int)orderStatus)" @selected>@(("Dashboard.Orders.OrderStatus." + orderStatus.ToString()).Localized())</option>
+                    }
+                </select>
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Orders.Search".Localized())</button>
+                <a href="@Url.ListAction("Orders")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Orders.Reset".Localized())</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>

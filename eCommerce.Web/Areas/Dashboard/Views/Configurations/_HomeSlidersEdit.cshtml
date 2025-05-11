@@ -1,0 +1,182 @@
+﻿@model eCommerce.Entities.Configuration
+
+<div class="modal-header">
+    <h5 class="modal-title">@("Dashboard.Configurations.EditConfiguration".Localized()) @(Model != null ? string.Format(": {0}", Model.Key.MakeWord()) : string.Empty)</h5>
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+@if (Model != null)
+{
+    //sample str
+    var str = string.Format("#IMG#slider.jpg#TH#Welcome to {0}#PG#Browse our latest products.#PG#This eCommerce website is developed with ASP .Net MVC framework and C# programming language for demo purpose.#LK#https://localhost:44384/en/cart", ConfigurationsHelper.ApplicationName);
+
+    var img = Model.Value.GetSubstringText("#IMG#", "#TH#");
+    var topHeading = Model.Value.GetSubstringText("#TH#", "#PG#");
+    var paragraph = Model.Value.GetSubstringText("#PG#", "#LK#");
+    var link = Model.Value.GetSubstringText("#LK#", "");
+
+    if (!string.IsNullOrEmpty(img))
+    {
+        img = img.Replace("IMG#", "");
+    }
+    if (!string.IsNullOrEmpty(topHeading))
+    {
+        topHeading = topHeading.Replace("TH#", "");
+    }
+    if (!string.IsNullOrEmpty(paragraph))
+    {
+        paragraph = paragraph.Replace("PG#", "");
+    }
+    if (!string.IsNullOrEmpty(link))
+    {
+        link = link.Replace("LK#", "");
+    }
+
+    <form id="editForm" method="post">
+        <div class="modal-body">
+            <input type="hidden" name="Key" value="@Model.Key" />
+            <input type="hidden" name="ConfigurationType" value="@Model.ConfigurationType" />
+
+            <div class="form-group">
+                <label>
+                    @("Dashboard.Configurations.Edit.SliderPicture".Localized())
+                </label>
+                <input id="sliderPicture" class="form-control" name="Picture" type="file" />
+                <div id="pictureArea">
+                    @Html.Picture(img, "image img-thumbnail", "width: 100%", "Home Slider", lazyLoad: false)
+                </div>
+                <input type="hidden" class="form-control" name="ImageURL" value="@img" />
+            </div>
+
+            <div class="form-group">
+                <label>
+                    @("Dashboard.Configurations.Edit.Heading".Localized())
+                </label>
+                <input class="form-control" name="Heading" value="@topHeading" />
+            </div>
+
+            <div class="form-group">
+                <label>
+                    @("Dashboard.Configurations.Edit.Paragraph".Localized())
+                </label>
+                <input class="form-control" name="Paragraph" value="@paragraph" />
+            </div>
+
+            <div class="form-group">
+                <label>
+                    @("Dashboard.Configurations.Edit.LinkURL".Localized())
+                </label>
+                <input class="form-control" name="LinkURL" value="@link" />
+            </div>
+
+            <input type="hidden" name="Value" value="@Model.Value" />
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                @("Dashboard.Configurations.Edit.Close".Localized())
+            </button>
+            <button class="btn btn-success" type="button" id="saveButton">
+                @("Dashboard.Configurations.Edit.Save".Localized())
+            </button>
+        </div>
+    </form>
+
+    <div id="sliderTemplate" style="display:none">
+        @Html.Picture(new Picture(), "image img-thumbnail", "width: 100%", "Home Slider")
+    </div>
+}
+else
+{
+    <div class="alert alert-danger mb-0" role="alert">
+        @("Dashboard.Configurations.NoConfigurationFound".Localized())
+    </div>
+}
+
+
+
+<script>
+
+    $("#sliderPicture").change(function () {
+		var pictures = this.files;
+        var picsData = new FormData();
+
+		for (var i = 0; i < pictures.length; i++) {
+			picsData.append("Picture", pictures[i]);
+        }
+    
+        $.ajax({
+            url: "@Url.UploadPicturesWithoutDatabase(isSiteFolder: true, subFolder: "sliders")",
+			type: "post",
+			data: picsData,
+			dateType: "json",
+			processData: false,
+			contentType: false
+		})
+        .done(function (responses) {
+            if (responses != undefined) {
+                var picResponse = responses[0];
+                AttachNewImage(picResponse.pictureURL, picResponse.pictureValue);
+            }
+		});
+    });
+
+    function AttachNewImage(pictureURL, pictureValue) {
+        var $newimgHTML = $("#sliderTemplate").clone();
+        $newimgHTML.find(".image").attr("src", pictureURL);
+        $("input[name=ImageURL]").val(pictureValue);
+        $("#pictureArea").html($newimgHTML.html());
+    }
+
+	@*$("#editForm").validate({
+		errorClass: "alert alert-danger",
+		errorElement: "div",
+        rules: {
+            Value: {
+                required: true,
+            }
+		},
+        messages: {
+            Value: {
+                required: "@("Dashboard.Configurations.Edit.Validation.ConfigurationValueRequited".Localized())",
+            }
+		},
+		highlight: function (element, errorClass) {
+			$(element).removeClass(errorClass);
+		}
+	});*@
+
+
+    $("#editForm").submit(function (e) { e.preventDefault(); updateConfiguration(); });
+	$("#saveButton").click(updateConfiguration);
+
+    function updateConfiguration() {
+        $("[name=Value]").val("#IMG#" + $("[name=ImageURL]").val() + "#TH#" + $("[name=Heading]").val() + "#PG#" + $("[name=Paragraph]").val() + "#LK#" + $("[name=LinkURL]").val());
+
+        if ($("#editForm").valid())
+	    {
+            addLoader("contentArea");
+
+	    	$.ajax({
+	    	    url: "@Url.EditAction("Configurations")",
+	    	    method: "post",
+	    	    data: $("#editForm").serialize()
+	    	})
+	    	.done(function (response) {
+                if (response.Success) {
+                    $('#formModal').modal('toggle');
+                    window.location.href = "@Url.ListAction("Configurations")";
+                }
+                else {
+                    removeLoader("contentArea");
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                }
+	    	})
+            .fail(function () {
+                 removeLoader("contentArea");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+	        });
+	    }
+    }
+</script>

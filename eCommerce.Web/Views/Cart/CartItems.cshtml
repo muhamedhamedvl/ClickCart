@@ -1,0 +1,46 @@
+﻿@using eCommerce.Entities
+@model eCommerce.Web.ViewModels.CartItemsViewModel
+
+@if (Model != null)
+{
+    Model.PageTitle = "PP.Cart.Title".LocalizedString();
+    Model.PageDescription = "PP.Cart.Description".LocalizedString();
+    Model.PageURL = Url.Cart();
+    Model.PageImageURL = PictureHelper.PageImageURL("cart.jpg");
+
+    <div class="breacrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text product-more">
+                        <a href="@Url.Home()">
+                            <i class="fas fa-home mr-1"></i>
+                            @("PP.Header.Menu.Home".Localized())
+                        </a>
+                        <span>@Model.PageTitle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1">
+                    <div class="page-content-holder">
+                        <div class="page-content-header">
+                            <h2>@Model.PageTitle</h2>
+                            <p>
+                                @Model.PageDescription
+                            </p>
+                        </div>
+                        <div id="response-holder" class="cart-items-page">
+                            @{Html.RenderPartial("_CartItems", Model);}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

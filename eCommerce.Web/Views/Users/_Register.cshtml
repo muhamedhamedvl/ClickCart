@@ -1,0 +1,84 @@
+﻿@model eCommerce.Web.ViewModels.RegisterViewModel
+
+<form id="registerForm" method="post">
+    @Html.AntiForgeryToken()
+    <div class="group-input">
+        <label for="FullName">@("PP.Register.FullName".LocalizedString()) <span class="text-danger">*</span></label>
+        <input class="form-control" name="FullName" placeholder="@("PP.Register.FullNamePlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Register.FullNamePlaceholder".LocalizedString())'" value="@Model.FullName">
+    </div>
+    <div class="group-input">
+        <label for="Email">@("PP.Register.Email".LocalizedString()) <span class="text-danger">*</span></label>
+        <input class="form-control" name="Email" placeholder="@("PP.Register.EmailPlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Register.EmailPlaceholder".LocalizedString())'" value="@Model.Email">
+    </div>
+    <div class="group-input">
+        <label for="username">@("PP.Register.Username".LocalizedString()) <span class="text-danger">*</span></label>
+        <input class="form-control" name="Username" placeholder="@("PP.Register.UsernamePlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Register.UsernamePlaceholder".LocalizedString())'" value="@Model.Username">
+    </div>
+    <div class="group-input">
+        <label for="pass">@("PP.Register.Password".LocalizedString()) <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" name="Password" placeholder="@("PP.Register.PasswordPlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Register.PasswordPlaceholder".LocalizedString())'" id="regPassword">
+    </div>
+    <div class="group-input">
+        <label for="pass">@("PP.Register.ConfirmPassword".LocalizedString()) <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" name="ConfirmPassword" placeholder="@("PP.Register.ConfirmPasswordPlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Register.ConfirmPasswordPlaceholder".LocalizedString())'">
+    </div>
+    <div class="group-input errorsRow" style="display:none">
+        <div class="alert alert-danger errorMessages mb-0" role="alert"></div>
+    </div>
+    <button type="submit" id="registerButton" class="site-btn login-btn">@("PP.Register.RegisterAccount".LocalizedString())</button>
+</form>
+
+<script>
+    var _fullNameRequired = "@("PP.Register.Validation.FullNameRequired".LocalizedString())";
+    var _usernameRequired = "@("PP.Register.Validation.UsernameRequired".LocalizedString())";
+    var _emailRequired = "@("PP.Register.Validation.EmailRequired".LocalizedString())";
+    var _emailFormat = "@("PP.Register.Validation.EmailFormat".LocalizedString())";
+    var _passwordRequired = "@("PP.Register.Validation.PasswordRequired".LocalizedString())";
+    var _confirmPasswordRequired = "@("PP.Register.Validation.ConfirmPasswordRequired".LocalizedString())";
+    var _passwordNotMatch = "@("PP.Register.Validation.PasswordNotMatched".LocalizedString())";
+
+    validateRegisterForm();
+
+    $("#registerForm").submit(function (e) {
+        submitForm();
+
+        e.preventDefault();
+    });
+
+    function submitForm() {
+        $(".errorsRow .errorMessages", "#registerForm").html("");
+        $(".errorsRow", "#registerForm").hide(200);
+        $(".errorsRow .errorMessages", "#registerForm").hide();
+
+        if ($("#registerForm").valid()) {
+            addLoader("register-container");
+
+            $.ajax({
+                url: "@Url.Register()",
+                type: "post",
+                data: $("#registerForm").serialize(),
+            })
+            .done(function (response) {
+                if (response != null && response.Success) {
+                    window.location.href = "@Url.Home()";
+                }
+                else {
+                    removeLoader("register-container");
+
+                    $(".errorsRow .errorMessages", "#registerForm").html(response.Messages);
+                    $(".errorsRow", "#registerForm").show(200);
+                    $(".errorsRow .errorMessages", "#registerForm").show();
+                }
+             })
+             .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("register-container");
+                 
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+        }
+    }
+</script>

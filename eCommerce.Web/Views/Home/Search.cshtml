@@ -1,0 +1,84 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared.Enums
+@model eCommerce.Web.ViewModels.ProductsViewModel
+
+@{ 
+    CategoryRecord currentLanguageCategoryRecord = null;
+    
+    var haveParentCategory = false;
+
+    if (Model != null)
+    {
+        if(Model.SelectedCategory != null)
+        {
+            currentLanguageCategoryRecord = Model.SelectedCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+            Model.PageTitle = "PP.Search.TitleWithCategory".LocalizedString().Replace("{category}", currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : Model.SelectedCategory.SanitizedName).Replace("{application}", ConfigurationsHelper.ApplicationName);
+            Model.PageDescription = currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Summary : string.Empty;
+            Model.PageURL = Url.SearchProducts(category: Model.SelectedCategory.SanitizedName, q: Model.SearchTerm);
+
+            
+            haveParentCategory = Model.SelectedCategory.ParentCategory != null;
+        }
+        else
+        {
+            Model.PageTitle = "PP.Search.Title".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+            Model.PageDescription = "PP.Search.Description".LocalizedString();
+            Model.PageURL = Url.SearchProducts(q: Model.SearchTerm);
+        }
+
+        Model.PageImageURL = PictureHelper.PageImageURL("search.jpg");
+    }
+
+    ViewBag.SearchTerm = Model.SearchTerm;
+
+}
+
+<input id="searchURL" type="hidden" value="@Url.SearchProducts(category: !string.IsNullOrEmpty(Model.CategoryName) ? Model.CategoryName : string.Empty, q: Model.SearchTerm)" />
+
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text product-more">
+                    <a href="@Url.Home()">
+                        <i class="fas fa-home mr-1"></i>
+                        @("PP.Header.Menu.Home".Localized())
+                    </a>
+                    @if (currentLanguageCategoryRecord != null)
+                    {
+                        <a href="@Url.SearchProducts()">@("PP.Search.SearchProducts".Localized())</a>
+                        if (haveParentCategory)
+                        {
+                            var currentLanguageParentCategoryRecord = Model.SelectedCategory.ParentCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            <a href="@Url.SearchProducts(category: Model.SelectedCategory.ParentCategory.SanitizedName)">@(currentLanguageParentCategoryRecord != null ? currentLanguageParentCategoryRecord.Name : string.Empty)</a>
+                        }
+                        <span>@(currentLanguageCategoryRecord.Name)</span>
+                    }
+                    else
+                    {
+                        <span>@("PP.Search.SearchProducts".Localized())</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="product-shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-8 order-2 order-lg-1 produts-sidebar-filter">
+                @{ 
+                    Html.RenderPartial("_SearchFilters", Model);
+                }               
+            </div>
+            <div class="col-lg-9 order-1 order-lg-2">               
+                @{
+                    Html.RenderPartial("_Search", Model);
+                }
+            </div>
+        </div>
+    </div>
+</section>

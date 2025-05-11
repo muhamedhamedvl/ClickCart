@@ -1,0 +1,146 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.ConfigurationsListingViewModels
+
+@if (Model.Configurations != null && Model.Configurations.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th width="40%">
+                    @("Dashboard.Configurations.List.Key".Localized())
+                </th>
+                <th width="30%">
+                    @("Dashboard.Configurations.List.Value".Localized())
+                </th>
+                <th width="15%">
+                    @("Dashboard.Configurations.List.ConfigurationType".Localized())
+                </th>
+                <th width="15%">
+                    @("Dashboard.Configurations.List.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var configuration in Model.Configurations)
+            {
+                <tr>
+                    <td>
+                        @configuration.Key.MakeWord()
+                        <br />
+                        <div class="small">@configuration.Description</div>
+                    </td>
+                    <td>
+                        @if (false && configuration.ConfigurationType == (int)ConfigurationTypes.Sliders)
+                        {
+                            var topHeading = configuration.Value.GetSubstringText("#TH#", "#MH#");
+                            var mainHeading = configuration.Value.GetSubstringText("#MH#", "#PG#");
+                            var paragraph = configuration.Value.GetSubstringText("#PG#", "");
+
+                            if (!string.IsNullOrEmpty(topHeading))
+                            {
+                                topHeading = topHeading.Replace("TH#", "");
+                            }
+                            if (!string.IsNullOrEmpty(mainHeading))
+                            {
+                                mainHeading = mainHeading.Replace("MH#", "");
+                            }
+                            if (!string.IsNullOrEmpty(paragraph))
+                            {
+                                paragraph = paragraph.Replace("PG#", "");
+                            }
+
+                            <h5>@topHeading</h5>
+                            <h4>@mainHeading</h4>
+                            <p>@paragraph</p>
+                        }
+                        else
+                        {
+                            <span>
+                                @configuration.Value.SafeSubstring(20, "...")
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        @(("Dashboard.Configurations.ConfigurationTypes." + ((ConfigurationTypes)configuration.ConfigurationType).ToString()).Localized())
+                    </td>
+                    <td>
+                        <button class="editButton btn btn-primary" data-id="@configuration.Key">
+                            <i class="fas fa-edit"></i>
+                            @("Dashboard.Configurations.List.Edit".Localized())
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Configurations(Model.SearchTerm, Model.ConfigurationType, Model.Pager.CurrentPage - 1)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.Configurations(Model.SearchTerm, Model.ConfigurationType, page)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Configurations(Model.SearchTerm, Model.ConfigurationType, Model.Pager.CurrentPage + 1)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    }
+
+    <script>
+	$(".editButton").click(function () {
+		$.ajax({
+			url: "@Url.EditAction("Configurations")",
+			method: "get",
+			data: {
+				Key: $(this).attr("data-id")
+			}
+        })
+        .done(function (response) {
+			$("#contentArea").html(response);
+			$('#formModal').modal('toggle');
+		})
+        .fail(function () {
+             removeLoader("response-holder");
+             Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		});
+	});
+    </script>
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Configurations.NoConfigurationFound".Localized())
+    </div>
+}

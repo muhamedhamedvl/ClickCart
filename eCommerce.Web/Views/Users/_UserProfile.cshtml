@@ -1,0 +1,153 @@
+﻿@model eCommerce.Web.ViewModels.ProfileDetailsViewModel
+
+@if (Model != null && Model.User != null)
+{
+    <form id="frmUserInfo">
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.FullName".Localized())</label>
+            <div class="col-sm-9">
+                <input name="FullName" type="text" class="form-control" value="@Model.User.FullName" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.Email".Localized())</label>
+            <div class="col-sm-9">
+                <input name="Email" type="email" class="form-control" value="@Model.User.Email" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.Username".Localized())</label>
+            <div class="col-sm-9">
+                <input name="Username" type="text" class="form-control" value="@Model.User.UserName" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.PhoneNumber".Localized())</label>
+            <div class="col-sm-9">
+                <input name="PhoneNumber" type="text" class="form-control" value="@Model.User.PhoneNumber">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.Country".Localized())</label>
+            <div class="col-sm-9">
+                <input name="Country" type="text" value="@Model.User.Country" class="form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.City".Localized())</label>
+            <div class="col-sm-9">
+                <input name="City" type="text" value="@Model.User.City" class="form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.Address".Localized())</label>
+            <div class="col-sm-9">
+                <textarea name="Address" class="form-control">@Model.User.Address</textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right">@("PP.UserProfile.Info.ZipCode".Localized())</label>
+            <div class="col-sm-9">
+                <input name="ZipCode" type="text" value="@Model.User.ZipCode" class="form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="offset-sm-3 col-sm-9">
+                <button id="btnUpdate" type="button" class="btn btn-success"><i class="fas fa-edit mr-1"></i> @("PP.UserProfile.Info.UpdateInfo".Localized())</button>
+            </div>
+        </div>
+    </form>
+}
+
+<script>
+    $("#frmUserInfo").validate({
+        errorClass: "alert alert-danger",
+        errorElement: "div",
+        rules: {
+            FullName: {
+                required: true,
+                minlength: 3,
+                maxlength: 25
+            },
+            Email: {
+                email: true,
+                required: true,
+            },
+            Username: {
+                required: true,
+            },
+            Country: {
+                required: true,
+            },
+            City: {
+                required: true,
+            },
+            Address: {
+                required: true,
+            },
+            ZipCode: {
+                required: true,
+            },
+        },
+        messages: {
+            FullName: {
+                required: "@("PP.UserProfile.Info.Validations.FullNameRequired".Localized())",
+                minlength: "@("PP.UserProfile.Info.Validations.FullNameMin".LocalizedString().Replace("{min}", "3"))",
+                maxlength: "@("PP.UserProfile.Info.Validations.FullNameMax".LocalizedString().Replace("{max}", "25"))"
+            },
+            Email: {
+                email: "@("PP.UserProfile.Info.Validations.EmailFormat".Localized())",
+                required: "@("PP.UserProfile.Info.Validations.EmailRequired".Localized())",
+            },
+            Username: {
+                required: "@("PP.UserProfile.Info.Validations.UsernameRequired".Localized())",
+            },
+            Country: {
+                required: "@("PP.UserProfile.Info.Validations.CountryRequired".Localized())",
+            },
+            City: {
+                required: "@("PP.UserProfile.Info.Validations.CityRequired".Localized())",
+            },
+            Address: {
+                required: "@("PP.UserProfile.Info.Validations.AddressRequired".Localized())",
+            },
+            ZipCode: {
+                required: "@("PP.UserProfile.Info.Validations.ZipCodeRequired".Localized())",
+            },
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+
+    $("#btnUpdate").click(function () {
+        if ($("#frmUserInfo").valid()) {
+                addLoader("response-holder");
+
+                $.ajax({
+                    url: "@Url.UpdateProfile()",
+                    method: "post",
+                    data: $("#frmUserInfo").serialize()
+                })
+                .done(function (response) {
+                    removeLoader("response-holder");
+
+                    if (response.Success) {
+                        Swal.fire("@("PP.Message.Success".Localized())", "@("PP.UserProfile.Info.UserInfoUpdated".Localized())", "success");
+                    }
+                    else {
+                        Swal.fire("@("PP.Message.Error".Localized())", response.Message, "error");
+                    }
+                })
+             .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("response-holder");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+             });
+            }
+		});
+</script>

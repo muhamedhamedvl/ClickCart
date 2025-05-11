@@ -1,0 +1,62 @@
+﻿@model List<Product>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="product-slider owl-carousel" data-loop="@(Model.Count > 4 ? "true" : "false")">
+        @foreach (var product in Model)
+        {
+            var currentLanguageProductRecord = product.ProductRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+            var currentLanguageProductCategoryRecord = product.Category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+            var sanitizedSEOTitle = AppDataHelper.CurrentLanguage.ShortCode == LanguagesHelper.EnglishLanguageShortCode && currentLanguageProductRecord != null ? currentLanguageProductRecord.Name.SanitizeLowerString() : string.Empty;
+
+            var detailsLink = Url.ProductDetails(category: product.Category.SanitizedName, ID: product.ID, sanitizedtitle: sanitizedSEOTitle);
+
+            var productPrice = product.Discount.HasValue && product.Discount.Value > 0 ? product.Discount.Value : product.Price;
+
+            var thumbnail = PictureHelper.GetProductThumbnail(product.ProductPictures, product.ThumbnailPictureID);
+
+            <div class="product-item">
+                <div class="pi-pic" data-href="@detailsLink">
+                    @Html.Thumbnail(picture: thumbnail, targetSize: 130, seoTitle: sanitizedSEOTitle, classes: "m-auto", alt: currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                    @if (product.isFeatured)
+                    {
+                        <div class="featured">
+                            @("PP.Home.FeaturedCategories.Products.Featured".Localized())
+                        </div>
+                    }
+                    <ul class="itemCartHolder">
+                        <li class="w-icon active"><a href="@detailsLink" title="@("PP.Shopping.ViewProduct".Localized())"><i class="fas fa-eye"></i></a></li>
+                        <li class="w-icon active"><a title="@("PP.Shopping.AddToCart".Localized())" data-id="@product.ID" data-price="@product.Price" class="pointerCursor btnAddToCart"><i class="fas fa-cart-plus"></i></a></li>
+                    </ul>
+                </div>
+                <div class="pi-text">
+                    <a class="catagory-name" href="@Url.SearchProducts(category: product.Category.SanitizedName)">@(currentLanguageProductCategoryRecord != null ? currentLanguageProductCategoryRecord.Name : string.Empty)</a>
+                    <div class="product-price ltr-dir">
+                        @if(product.Discount.HasValue && product.Discount.Value > 0)
+                        {
+                            <span>
+                                @product.Price.WithCurrency()
+                            </span>
+                        }
+                        @productPrice.WithCurrency()
+                    </div>
+                    <a href="@detailsLink">
+                        <h5>
+                            @(currentLanguageProductRecord != null ? currentLanguageProductRecord.Name : string.Empty)
+                        </h5>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div>
+        <div class="alert alert-warning m-0" role="alert">
+            @("PP.Search.ProductsNotFound".Localized())
+        </div>
+    </div>
+}

@@ -1,0 +1,238 @@
+﻿@model eCommerce.Web.ViewModels.PageViewModel
+@{
+    //Model.PageTitle = "PP.Register.Title".LocalizedString();
+    //Model.PageDescription = "PP.Register.Description".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+    Model.PageTitle = "Contact Us";
+    Model.PageURL = Url.StaticPage("ContactUs");
+    Model.PageImageURL = PictureHelper.PageImageURL("contact-us.jpg");
+}
+
+<div class="register-login-section spad">
+    <div class="container" id="register-container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="login-form page-content-holder">
+                    <div class="page-content-header">
+                        <h2>@Model.PageTitle</h2>
+                    </div>
+                    <section class="section-margin--small mb-5">
+                        <div class="container">
+                            <form id="contact-form" class="mb-5">
+                                @Html.AntiForgeryToken()
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="name">
+                                                Subject
+                                            </label>
+                                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter Subject" required="required">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name">
+                                                Name
+                                            </label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name" required="required">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">
+                                                Email Address
+                                            </label>
+                                            <input type="text" class="form-control" id="email" name="email" placeholder="Enter Your Email" required="required">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="name">
+                                                Message
+                                            </label>
+                                            <textarea name="message" id="message" class="form-control" rows="8" cols="25" required="required" placeholder="Write Your Message"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary pull-right" id="btnContactUs">
+                                            <i class="fas fa-paper-plane mr-1"></i> Send Message
+                                        </button>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="errorsRow" style="display:none">
+                                            <div class="alert alert-danger errorMessages mt-2 mb-0" role="alert"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="successRow" style="display:none">
+                                            <div class="alert alert-success successMessages mt-2 mb-0" role="alert"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr />
+                        </div>
+                    </section>
+                    <section class="mb-5">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col col-12">
+                                    <div class="card-deck">
+                                        <div class="card text-white text-center p-3" style="background-color:#fc7978">
+                                            <p class="display-4">
+                                                <i class="fas fa-envelope"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="mailto://@ConfigurationsHelper.Email" class="text-white" target="_blank" rel="nofollow">
+                                                @ConfigurationsHelper.Email
+                                            </a>
+                                        </div>
+                                        <div class="card text-white text-center p-3" style="background-color:#de6b35">
+                                            <p class="display-4">
+                                                <i class="fas fa-phone"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="tel://@ConfigurationsHelper.PhoneNumber" class="text-white" target="_blank" rel="nofollow">
+                                                @ConfigurationsHelper.PhoneNumber
+                                            </a>
+                                        </div>
+                                        <div class="card text-white text-center p-3" style="background-color:#745c97">
+                                            <p class="display-4">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="#" class="text-white" target="_blank" rel="nofollow">
+                                                @Html.Raw(ConfigurationsHelper.AddressLine1 + "<br />" + ConfigurationsHelper.AddressLine2)
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <div class="col col-12">
+                                    <div class="card-deck">
+                                        <div class="card bg-primary text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-facebook-f"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="@ConfigurationsHelper.FacebookURL" class="text-white" target="_blank" rel="nofollow">
+                                                Like &amp; Get in Touch on Facebook
+                                            </a>
+                                        </div>
+                                        <div class="card bg-info text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-twitter"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="@ConfigurationsHelper.TwitterURL" class="text-white" target="_blank" rel="nofollow">
+                                                Tweet &amp; Follow on Twitter
+                                            </a>
+                                        </div>
+                                        <div class="card bg-success text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="https://wa.me/@ConfigurationsHelper.WhatsAppNumber" class="text-white" target="_blank" rel="nofollow">
+                                                Message Us on WhatsApp
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <div class="col col-12">
+                                    <div class="card-deck">
+                                        <div class="card bg-secondary text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-instagram"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="@ConfigurationsHelper.InstagramURL" class="text-white" target="_blank" rel="nofollow">
+                                                Follow Us on Instagram
+                                            </a>
+                                        </div>
+                                        <div class="card bg-danger text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-youtube"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="@ConfigurationsHelper.YouTubeURL" class="text-white" target="_blank" rel="nofollow">
+                                                Subscribe Us on YouTube
+                                            </a>
+                                        </div>
+                                        <div class="card bg-primary text-white text-center p-3">
+                                            <p class="display-4">
+                                                <i class="fab fa-linkedin-in"></i>
+                                            </p>
+                                            <hr />
+                                            <a href="@ConfigurationsHelper.LinkedInURL" class="text-white" target="_blank" rel="nofollow">
+                                                Connect Us on LinkedIn
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _contactFormSubjectRequired = "Please write your message subject.";
+    var _contactFormNameRequired = "Please write your name.";
+    var _contactFormEmailRequired = "Please write your name.";
+    var _contactFormEmailFormat = "Please write a valid email address.";
+    var _contactFormMessageRequired = "Please write your message.";
+
+    $(document).ready(function () {
+        validateContactUsForm();
+
+        $("#contact-form").submit(function (e) {
+            submitContactUsForm();
+
+            e.preventDefault();
+        });
+
+        function submitContactUsForm() {
+            $(".errorsRow .errorMessages", "#contact-form").html("");
+            $(".errorsRow", "#contact-form").hide(200);
+            $(".errorsRow .errorMessages", "#contact-form").hide();
+            $(".successRow .successMessages", "#contact-form").html("");
+            $(".successRow", "#contact-form").hide(200);
+            $(".successRow .successMessages", "#contact-form").hide();
+
+            if ($("#contact-form").valid()) {
+                addLoader("contact-form");
+
+                $.ajax({
+                    url: "@Url.SubmitContactForm()",
+                    type: "post",
+                    data: $("#contact-form").serialize(),
+                })
+                .done(function (response) {
+                    removeLoader("contact-form");
+
+                    if (response != null && response.Success) {
+                        $(".successRow .successMessages", "#contact-form").html(response.Message);
+                        $(".successRow", "#contact-form").show(200);
+                        $(".successRow .successMessages", "#contact-form").show();
+                    }
+                    else {
+                        $(".errorsRow .errorMessages", "#contact-form").html(response.Message);
+                        $(".errorsRow", "#contact-form").show(200);
+                        $(".errorsRow .errorMessages", "#contact-form").show();
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    removeLoader("contact-form");
+
+                    Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                    console.log('jqXHR:' + jqXHR);
+                    console.log('textStatus:' + textStatus);
+                    console.log('errorThrown:' + errorThrown);
+                });
+            }
+        }
+    });
+</script>

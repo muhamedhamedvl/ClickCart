@@ -1,0 +1,61 @@
+﻿@using eCommerce.Entities
+@using eCommerce.Shared
+@model eCommerce.Web.ViewModels.ProductsViewModel
+
+@if (Model != null && Model.Categories != null && Model.Categories.Count > 0)
+{
+    var categoriesWithChildren = CategoryHelpers.MakeCategoriesHierarchy(Model.Categories);
+
+    <div class="filter-widget">
+        <h4 class="fw-title">@("PP.Search.Categories".LocalizedString())</h4>
+        <ul class="filter-catagories">
+            <li class="@(!Model.CategoryID.HasValue ? "active" : string.Empty)">
+                <a class="@(!Model.CategoryID.HasValue ? "active" : string.Empty)" href="@Url.SearchProducts(category: string.Empty, q: Model.SearchTerm)">
+                    @("PP.Search.Categories.AllCategories".LocalizedString())
+                </a>
+            </li>
+            @foreach (var categoryWithChildren in categoriesWithChildren)
+            {
+                var category = categoryWithChildren.Category;
+
+                var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                <li class="@(category.ID == Model.CategoryID ? "active" : string.Empty)">
+                    <div>
+                        <span class="category-count @(category.ID == Model.CategoryID ? "text-white" : string.Empty)">
+                            @CategoryHelpers.GetCategoryAllChildrensProductCount(category, Model.Categories)
+                        </span>
+                        <div class="category-item-holder @(category.ID == Model.CategoryID ? "text-white" : string.Empty)">
+                            <i class="fas fa-angle-right"></i>
+                        </div>
+                        <a class="@(category.ID == Model.CategoryID ? "active" : string.Empty)" href="@Url.SearchProducts(category: category.SanitizedName, q: Model.SearchTerm)">
+                            @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                        </a>
+
+                        @if (categoryWithChildren.Children != null && categoryWithChildren.Children.Count > 0)
+                        {
+                            <ul class="sub-categories" style="display:block">
+                                @foreach (var childCategory in categoryWithChildren.Children)
+                                {
+                                    var currentLanguageChildCategoryRecord = childCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                                    <li class="@(childCategory.ID == Model.CategoryID ? "active" : string.Empty)">
+                                        <span class="category-count @(childCategory.ID == Model.CategoryID ? "text-white" : string.Empty)">
+                                            @CategoryHelpers.GetCategoryAllChildrensProductCount(childCategory, Model.Categories)
+                                        </span>
+                                        <div class="category-item-holder @(childCategory.ID == Model.CategoryID ? "text-white" : string.Empty)">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </div>
+                                        <a class="@(childCategory.ID == Model.CategoryID ? "active" : string.Empty)" href="@Url.SearchProducts(category: childCategory.SanitizedName)">
+                                            @(currentLanguageChildCategoryRecord != null ? currentLanguageChildCategoryRecord.Name : string.Empty)
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}

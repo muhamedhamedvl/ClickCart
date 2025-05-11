@@ -1,0 +1,117 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.RolesListingViewModel
+@{
+    if (Model != null)
+    {
+        Model.PageTitle = "Dashboard.Roles.Title".LocalizedString();
+        Model.PageDescription = "Dashboard.Roles.Description".LocalizedString();
+        Model.PageURL = Url.ListAction("Roles");
+        Model.PageImageURL = PictureHelper.PageImageURL("roles.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder card shadow mb-4">
+    <div class="card-header">
+        <form action="@Url.ListAction("Roles")">
+            <div class="input-group">
+                <input name="searchterm" type="text" value="@Model.SearchTerm" class="form-control" placeholder="@("Dashboard.Roles.SearchPlaceholder".Localized())">
+                <button type="submit" class="form-control btn btn-primary"><i class="fas fa-search"></i> @("Dashboard.Roles.Search".Localized())</button>
+                <a href="@Url.ListAction("Roles")" role="button" class="form-control btn btn-primary"><i class="fas fa-redo-alt"></i> @("Dashboard.Roles.Reset".Localized())</a>
+                <button type="button" role="button" class="form-control btn btn-success"  data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus"></i> @("Dashboard.Roles.CreateRole".Localized())</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0" id="list-holder">
+        @{Html.RenderPartial("_Listing", Model);}
+    </div>
+</div>
+
+<div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@("Dashboard.Roles.CreateNewRole".Localized())</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="role-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>
+                            @("Dashboard.Roles.Create.Name".Localized())
+                        </label>
+                        <input class="form-control" name="Name" placeholder="@("Dashboard.Roles.Create.NamePlaceholder".Localized())" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@("Dashboard.Roles.Close".Localized())</button>
+                    <button class="btn btn-success" type="button" id="saveButton">
+                        @("Dashboard.Roles.Save".Localized())
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#role-form").validate({
+        errorClass: "alert alert-danger",
+        errorElement: "div",
+        rules: {
+            Name: {
+                required: true,
+                minlength: 3,
+                maxlength: 25
+            },
+        },
+        messages: {
+            Name: {
+                required: "@("Dashboard.Roles.Save.Validations.NameRequired".Localized())",
+                minlength: "@("Dashboard.Roles.Save.Validations.NameMinimumLength".LocalizedString().Replace("{min}", "3"))",
+                maxlength: "@("Dashboard.Roles.Save.Validations.NameMaximumLength".LocalizedString().Replace("{max}", "25"))"
+            },
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+
+    $("#saveButton").click(createRole);
+
+    $("#role-form").submit(function (event) { createRole(); event.preventDefault(); });
+
+    function createRole() {
+        if ($("#role-form").valid()) {
+            addLoader("role-form");
+            $.ajax({
+                url: "@Url.CreateAction("Roles")",
+                method: "post",
+                data: { roleName: $("input[name=Name]", "#role-form").val() }
+            })
+            .done(function (response) {
+                removeLoader("role-form");
+                if (response.Success) {
+                    window.location.href = "@Url.ListAction("Roles")";
+                }
+                else {
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                }
+            })
+            .fail(function () {
+                 removeLoader("role-form");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		    });
+        }
+    }
+</script>

@@ -1,0 +1,26 @@
+﻿@model List<eCommerce.Entities.Category>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="banner-section spad">
+        <div class="container-fluid">
+            <div class="row">
+                @foreach (var category in Model)
+                {
+                    var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                    <div class="col-lg-4">
+                        <div class="single-banner d-flex align-items-center" title="@("PP.Home.FeaturedCategories.BrowseCategoryProducts".LocalizedString().Replace("{category}", currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty))">
+                            @Html.Picture(picture: category.Picture, defaultPic: "site/default-bg.jpg", alt: currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                            <a class="inner-text" href="@Url.SearchProducts(category: category.SanitizedName)">
+                                <h4>
+                                    @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                                </h4>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

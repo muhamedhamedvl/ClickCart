@@ -1,0 +1,72 @@
+﻿<div id="newslatter-item" class="newslatter-item">
+    <h5>@("PP.Footer.NewsLetter".Localized())</h5>
+    <p>@("PP.Footer.NewsLetter.GetOurEmailUpdates".Localized())</p>
+    <form id="newsletter-form" action="#" class="subscribe-form">
+        @Html.AntiForgeryToken()
+        <input name="email" type="text" placeholder="@("PP.Footer.NewsLetter.EnterYourEmailPlaceholder".Localized())" value="">
+        <button type="submit">@("PP.Footer.NewsLetter.Subscribe".Localized())</button>
+        <div class="errorsRow" style="display:none">
+            <div class="alert alert-danger errorMessages mt-2 mb-0" role="alert"></div>
+        </div>
+        <div class="successRow" style="display:none">
+            <div class="alert alert-success successMessages mt-2 mb-0" role="alert"></div>
+        </div>
+    </form>
+</div>
+
+<script>
+    var _newsLetterEmailRequired = "@("PP.Register.Validation.EmailRequired".LocalizedString())";
+    var _newsLetterEmailFormat = "@("PP.Register.Validation.EmailFormat".LocalizedString())";
+
+    $(document).ready(function () {
+        validateNewsLetterForm();
+
+        $("#newsletter-form").submit(function (e) {
+            submitNewsLetterForm();
+
+            e.preventDefault();
+        });
+
+        function submitNewsLetterForm() {
+            $(".errorsRow .errorMessages", "#newsletter-form").html("");
+            $(".errorsRow", "#newsletter-form").hide(200);
+            $(".errorsRow .errorMessages", "#newsletter-form").hide();
+            $(".successRow .successMessages", "#newsletter-form").html("");
+            $(".successRow", "#newsletter-form").hide(200);
+            $(".successRow .successMessages", "#newsletter-form").hide();
+
+            if ($("#newsletter-form").valid()) {
+                addLoader("newslatter-item");
+
+                $.ajax({
+                    url: "@Url.SubscribeNewsLetter()",
+                    type: "post",
+                    data: $("#newsletter-form").serialize(),
+                })
+                .done(function (response) {
+                    removeLoader("newslatter-item");
+
+                    if (response != null && response.Success) {
+                        $(".successRow .successMessages", "#newsletter-form").html(response.Message);
+                        $(".successRow", "#newsletter-form").show(200);
+                        $(".successRow .successMessages", "#newsletter-form").show();
+                    }
+                    else {
+                        $(".errorsRow .errorMessages", "#newsletter-form").html(response.Message);
+                        $(".errorsRow", "#newsletter-form").show(200);
+                        $(".errorsRow .errorMessages", "#newsletter-form").show();
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    removeLoader("newslatter-item");
+
+                    Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                    console.log('jqXHR:' + jqXHR);
+                    console.log('textStatus:' + textStatus);
+                    console.log('errorThrown:' + errorThrown);
+                });
+            }
+        }
+    });
+</script>

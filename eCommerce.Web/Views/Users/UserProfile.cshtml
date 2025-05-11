@@ -1,0 +1,127 @@
+﻿@model eCommerce.Web.ViewModels.ProfileDetailsViewModel
+
+@if (Model != null && Model.User != null)
+{
+    Model.PageTitle = "PP.UserProfile.Title".LocalizedString();
+    Model.PageDescription = "PP.UserProfile.Description".LocalizedString().Replace("{application}", ConfigurationsHelper.ApplicationName);
+    Model.PageURL = Url.UserProfile();
+    Model.PageImageURL = PictureHelper.UserAvatarSource(Model.User.Picture);
+
+    <div class="spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1">
+                    <div class="page-content-holder">
+                        <div class="page-content-header">
+                            <h2>@Model.PageTitle</h2>
+                            <p>
+                                @Model.PageDescription
+                            </p>
+                        </div>
+                        <div id="profile-holder">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="card">
+                                            @Html.UserAvatar(Model.User.Picture, "card-img-top", "width: 100%", "User Avatar")
+                                            <div class="card-body">
+                                                <h5 class="card-title m-0">
+                                                    @Model.User.FullName
+                                                </h5>
+                                            </div>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item" title="@("PP.UserProfile.Username".Localized())">
+                                                    <i class="fas fa-user-alt mr-1"></i>
+                                                    @Model.User.UserName
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <ul class="nav nav-tabs card-header-tabs">
+                                                    <li class="nav-item">
+                                                        <a class="user-link nav-link @(string.IsNullOrEmpty(Model.ActiveTab) || Model.ActiveTab.Equals("info") ? "active" : string.Empty) pointerCursor" data-href="@Url.UserProfile()">@("PP.UserProfile.Info".Localized())</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="user-link nav-link @(!string.IsNullOrEmpty(Model.ActiveTab) && Model.ActiveTab.Equals("change-password") ? "active" : string.Empty) pointerCursor" data-href="@Url.ChangePassword()">@("PP.UserProfile.ChangePassword".Localized())</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="user-link nav-link @(!string.IsNullOrEmpty(Model.ActiveTab) && Model.ActiveTab.Equals("change-avatar") ? "active" : string.Empty) pointerCursor" data-href="@Url.ChangeAvatar()">@("PP.UserProfile.ChangeAvatar".Localized())</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="user-link nav-link @(!string.IsNullOrEmpty(Model.ActiveTab) && Model.ActiveTab.Equals("orders") ? "active" : string.Empty) pointerCursor" data-href="@Url.UserOrders()">@("PP.UserProfile.Orders".Localized())</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="user-link nav-link @(!string.IsNullOrEmpty(Model.ActiveTab) && Model.ActiveTab.Equals("comments") ? "active" : string.Empty) pointerCursor" data-href="@Url.UserComments()">@("PP.UserProfile.Comments".Localized())</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="response-holder" style="min-height: 200px;">
+                                                    @if (string.IsNullOrEmpty(Model.ActiveTab) || Model.ActiveTab.Equals("info"))
+                                                    {
+                                                        Html.RenderPartial("_UserProfile", Model);
+                                                    }
+                                                    else
+                                                    {
+                                                        if(Model.ActiveTab.Equals("change-password"))
+                                                        {
+                                                            Html.RenderAction("ChangePassword");
+                                                        }
+                                                        else if(Model.ActiveTab.Equals("change-avatar"))
+                                                        {
+                                                            Html.RenderAction("ChangeAvatar");
+                                                        }
+                                                        else if(Model.ActiveTab.Equals("orders"))
+                                                        {
+                                                            Html.RenderAction("UserOrders", "Orders");
+                                                        }
+                                                        else if(Model.ActiveTab.Equals("comments"))
+                                                        {
+                                                            Html.RenderAction("UserComments", "Comments");
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(".user-link").click(function () {
+        var url = $(this).attr("data-href");
+
+        if (url != undefined && url != "") {            
+            $("#response-holder").html("");
+            addLoader("response-holder");
+
+            $(".user-link").removeClass("active");
+            $(this).addClass("active");
+
+            $.ajax({
+                url: url,
+            })
+            .done(function (response) {
+                $("#response-holder").html(response);
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                removeLoader("response-holder");
+                
+                Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                console.log('jqXHR:' + jqXHR);
+                console.log('textStatus:' + textStatus);
+                console.log('errorThrown:' + errorThrown);
+            });
+        }
+    });
+</script>

@@ -1,0 +1,26 @@
+﻿@model eCommerce.Web.ViewModels.ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    if (loginProviders.Count() > 0)
+    {
+        <hr />
+        <div class="switch-login my-2">
+            <span class="or-login">Or Login with</span>
+        </div>
+
+        using (Html.BeginForm("SocialLogin", "Users", new { ReturnUrl = Model.ReturnUrl }))
+        {
+            @Html.AntiForgeryToken()
+            <div id="socialLoginList" class="text-center">
+                <p>
+                    @foreach (AuthenticationDescription p in loginProviders)
+                    {
+                        <button type="submit" class="social-login-btn @Html.GetButtonBackgroundClassForSocialMediaProvider(p.AuthenticationType)" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"> <i class="@Html.GetFontAwesomeIconForSocialMediaProvider(p.AuthenticationType) mr-2"></i> @p.AuthenticationType</button>
+                    }
+                </p>
+            </div>
+        }
+    }
+}

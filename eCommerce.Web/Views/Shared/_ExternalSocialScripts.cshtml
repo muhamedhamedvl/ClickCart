@@ -1,0 +1,13 @@
+﻿@if (!string.IsNullOrEmpty(ConfigurationsHelper.GoogleAnalyticsScript))
+{
+    <text>
+        @Html.Raw(ConfigurationsHelper.GoogleAnalyticsScript)
+    </text>
+}
+
+@if (!string.IsNullOrEmpty(ConfigurationsHelper.FacebookMessengerScript))
+{
+    <text>
+        @Html.Raw(ConfigurationsHelper.FacebookMessengerScript)
+    </text>
+}

@@ -1,0 +1,657 @@
+﻿@model LanguageActionViewModel
+
+@{
+    if (Model != null)
+    {
+        if (Model.ID > 0)
+        {
+            Model.PageTitle = "Dashboard.Languages.EditLangaugeTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Languages.EditLanguageDescription".LocalizedString();
+            Model.PageURL = Url.EditAction("Languages", Model.ID);
+        }
+        else
+        {
+            Model.PageTitle = "Dashboard.Languages.CreateLanguageTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Languages.CreateLanguageDescription".LocalizedString();
+            Model.PageURL = Url.CreateAction("Languages");
+        }
+
+        Model.PageImageURL = PictureHelper.PageImageURL("languages.jpg");
+    }
+
+    var iconCode = Model.IconCode;
+
+    if (string.IsNullOrEmpty(iconCode))
+    {
+        iconCode = "FLAG.png";
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder mb-4">
+    <form id="actionForm" method="post">
+        <input type="hidden" name="ID" value="@Model.ID" />
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Languages.Action.Name".Localized())
+                    </label>
+                    <input class="form-control" name="Name" value="@Model.Name" />
+                </div>
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Languages.Action.ShortCode".Localized())
+                    </label>
+                    <input class="form-control" name="ShortCode" value="@Model.ShortCode" />
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" name="IsEnabled" value="true" class="form-check-input" id="IsEnabled" @(Model.IsEnabled ? "checked" : string.Empty)>
+                        <input type="hidden" name="IsEnabled" value="false">
+
+                        <label class="form-check-label" for="IsEnabled">
+                            @("Dashboard.Languages.Action.Enabled".Localized())
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" name="IsDefault" value="true" class="form-check-input" id="IsDefault" @(Model.IsDefault ? "checked" : string.Empty)>
+                        <input type="hidden" name="IsDefault" value="false">
+
+                        <label class="form-check-label" for="IsDefault">
+                            @("Dashboard.Languages.Action.MakeDefault".Localized())
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" name="IsRTL" value="true" class="form-check-input" id="IsRTL" @(Model.IsRTL ? "checked" : string.Empty)>
+                        <input type="hidden" name="IsRTL" value="false">
+
+                        <label class="form-check-label" for="IsRTL">
+                            @("Dashboard.Languages.Action.IsRTL".Localized())
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group flags-selection">
+                    <label>
+                        @("Dashboard.Languages.Action.Icon".Localized())
+                    </label>
+                    <span class="mx-4 p-2">
+                        <img id="LanguageIcon" src="@Html.LanguageIcon(iconCode)" onerror="this.onerror=null; this.src='/content/images/site/flags/FLAG.png';" />
+                        <input name="IconCode" value="@iconCode" type="hidden" />
+                    </span>
+                    <div class="flags-table-holder">
+                        <table class="flags-table table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" colspan="3">
+                                        @("Dashboard.Languages.Action.SelectLanguageIcon".Localized())
+                                    </th>
+                                    <th scope="col" colspan="7">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @("Dashboard.Languages.Action.SearchForIcon".Localized())
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="@("Dashboard.Languages.Action.SearchIconPlaceholder".Localized())" id="txtIconCode">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" id="btnSearchForIcon"><i class="fas fa-search fa-sm"></i></button>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/ZW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AL.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AO.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/AQ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AX.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/AZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BB.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/BD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BJ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ZM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BN.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/BO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ZA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/YT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/BZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CA.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/CC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CL.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CN.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/CO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/YE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CV.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CX.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/CZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DE.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/XK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DJ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/DZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/WS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/EC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/EE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/EG.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/EH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ER.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ES.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ET.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/EU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/FI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/FJ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/FK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/FM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/FO.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/FR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GB.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GL.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/GM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GP.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GQ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/GY.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/HK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/WF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/HN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/HR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/HT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/HU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ID.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IL.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/IM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IQ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/IT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/JE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/JM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/JO.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/JP.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KP.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KW.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/KY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/KZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LB.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LT.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/LU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LV.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/LY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ME.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MH.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/Content/images/site/flags/MK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ML.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MP.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MQ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MT.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/MU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MV.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MX.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/MZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NF.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/NG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NL.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NP.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/NZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/OM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PA.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/PE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PF.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PL.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PS.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/PT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/PY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/QA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/RE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/RO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/RS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/RU.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/RW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SA.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/SB.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SE.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SL.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/SM.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SS.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/ST.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SV.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SX.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/SZ.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/TA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TD.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VI.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TH.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TJ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TK.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TL.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TM.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/TN.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TO.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TR.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TT.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TV.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TW.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/TZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/UA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/UG.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VG.png" /></td>
+                                </tr>
+                                <tr>
+
+                                    <td><img src="~/Content/images/site/flags/US.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/UY.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/UZ.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VA.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VC.png" /></td>
+                                    <td><img src="~/Content/images/site/flags/VE.png" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="form-group mb-0">
+                    @if (Model.ID > 0)
+                    {
+                    <button class="btn btn-info" type="submit" id="actionButton">
+                        <i class="fas fa-edit mr-1"></i>
+                        @("Dashboard.Languages.Action.Update".Localized())
+                    </button>
+                        if (Model.IsEnabled)
+                        {
+                <button class="disableButton btn btn-danger" type="button" data-id="@Model.ID">
+                    <i class="fas fa-minus-circle mr-1"></i>
+                    @("Dashboard.Languages.Action.Disable".Localized())
+                </button>
+                        }
+                        else
+                        {
+                <button class="enableButton btn btn-success" type="button" data-id="@Model.ID">
+                    <i class="fas fa-plus-circle mr-1"></i>
+                    @("Dashboard.Languages.Action.Enable".Localized())
+                </button>
+                        }
+                    }
+                    else
+                    {
+                <button class="btn btn-success" type="submit" id="actionButton">
+                    <i class="fas fa-plus mr-1"></i>
+                    @("Dashboard.Languages.Action.Save".Localized())
+                </button>
+                    }
+                <a class="btn btn-secondary" href="@Url.ListAction("Languages")">
+                    <i class="fas fa-angle-double-left mr-1"></i>
+                    @("Dashboard.Languages.Action.Cancel".Localized())
+                </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.ID > 0)
+    {
+        Html.RenderAction("Resources", "Languages", new { ID = Model.ID });
+    }
+</div>
+
+<script>
+    $("[src='/Content/images/site/flags/@iconCode']", ".flags-table").parent("td").addClass("bg-success");
+
+    $("img", ".flags-table").click(function () {
+
+        var src = $(this).attr("src");
+        var iconCode = src.substr(src.lastIndexOf("/"));
+
+        if (iconCode) {
+            $("#LanguageIcon").attr("src", src);
+
+            $("td", ".flags-table").removeClass("bg-success");
+            $(this).parent("td").addClass("bg-success");
+
+            $("[name=IconCode]").val(iconCode.replace("/", ""));
+        }
+    });
+
+    $("#btnSearchForIcon").click(searchForIcon);
+
+    function searchForIcon() {
+        var iconCode = $("#txtIconCode").val();
+
+        if (iconCode) {
+            $("td", ".flags-table").hide();
+            $("[src='/Content/images/site/flags/" + iconCode.toUpperCase() + ".png']", ".flags-table").parent("td").show();
+        }
+        else {
+            $("td", ".flags-table").show();
+        }
+    }
+
+    $('form input:not([type="submit"])').keydown(function (e) {
+        if (e.keyCode == 13) {
+            var inputs = $(this).parents("form").eq(0).find(":input");
+            if (inputs[inputs.index(this) + 1] != null) {
+                inputs[inputs.index(this) + 1].focus();
+            }
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $("#actionForm").validate({
+		errorClass: "alert alert-danger",
+		errorElement: "div",
+		rules: {
+			Name: {
+				required: true,
+				minlength: 3,
+				maxlength: 25
+			},
+			ShortCode: {
+				required: true,
+				minlength: 1,
+				maxlength: 12
+			}
+		},
+		messages: {
+			Name: {
+				required: "@("Dashboard.Languages.Action.Validation.NameRequired".Localized())",
+				minlength: "@("Dashboard.Languages.Action.Validation.NameMinimumLength".LocalizedString().Replace("{min}", "3"))",
+				maxlength: "@("Dashboard.Languages.Action.Validation.NameMaximumLength".LocalizedString().Replace("{max}", "25"))"
+			},
+			ShortCode: {
+				required: "@("Dashboard.Languages.Action.Validation.ShortCodeRequired".Localized())",
+				minlength: "@("Dashboard.Languages.Action.Validation.ShortCodeMinimumLength".LocalizedString().Replace("{min}", "3"))",
+				maxlength: "@("Dashboard.Languages.Action.Validation.ShortCodeMaximumLength".LocalizedString().Replace("{max}", "12"))"
+			}
+		},
+		highlight: function (element, errorClass) {
+			$(element).removeClass(errorClass);
+		}
+	});
+
+    $("#actionForm").submit(function (e) {
+        saveLanguage();
+
+        e.preventDefault();
+    });
+
+    function saveLanguage() {
+        if ($("#actionForm").valid()) {
+            addLoader("actionForm");
+
+            $.ajax({
+                type: "post",
+                data: $("#actionForm").serialize()
+			})
+            .done(function (response) {
+                if (response.Success) {
+                    window.location.href = "@Url.ListAction("Languages")";
+				}
+                else {
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                    removeLoader("actionForm");
+				}
+			})
+            .fail(function () {
+                removeLoader("actionForm");
+                Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	    });
+        }
+    }
+
+    $(".disableButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Languages.ConfirmDisableWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Languages.ConfirmDisable".Localized())',
+            cancelButtonText: '@("Dashboard.Languages.ConfirmDisableCancel".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("actionForm");
+
+				$.ajax({
+					url: "@Url.DisableLanguage()",
+                    type: "post",
+                    data: { id: recordID }
+				})
+                .done(function (response) {
+                    if (response.Success) {
+                        window.location.href = "@Url.ListAction("Languages")";
+				    }
+                    else {
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                        removeLoader("actionForm");
+				    }
+				})
+                .fail(function () {
+                    removeLoader("actionForm");
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	        });
+            }
+        });
+    });
+
+    $(".enableButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        if (recordID) {
+            $("#dtLoader").show();
+			$("#response-holder").hide();
+
+			$.ajax({
+				url: "@Url.EnableLanguage()",
+                type: "post",
+                data: { id: recordID }
+			})
+            .done(function (response) {
+                if (response.Success) {
+                    window.location.href = "@Url.ListAction("Languages")";
+				}
+                else {
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+                    removeLoader("actionForm");
+				}
+			})
+            .fail(function () {
+                removeLoader("actionForm");
+                Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+       	    });
+        }
+    });
+</script>

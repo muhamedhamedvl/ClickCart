@@ -1,0 +1,320 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.CategoryActionViewModel
+@{
+    if (Model != null)
+    {
+        if (Model.CategoryID > 0)
+        {
+            Model.PageTitle = "Dashboard.Categories.EditCategoryTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Categories.EditCategoryDescription".LocalizedString();
+            Model.PageURL = Url.EditAction("Categories", Model.CategoryID);
+        }
+        else
+        {
+            Model.PageTitle = "Dashboard.Categories.CreateCategoryTitle".LocalizedString();
+            Model.PageDescription = "Dashboard.Categories.CreateCategoryDescription".LocalizedString();
+            Model.PageURL = Url.CreateAction("Categories");
+        }
+
+        Model.PageImageURL = PictureHelper.PageImageURL("categories.jpg");
+    }
+}
+
+<div class="page-info-container">
+    <h3 class="h3 mb-2 text-gray-800">
+        @Model.PageTitle
+    </h3>
+    <p>
+        @Model.PageDescription
+    </p>
+    <hr />
+</div>
+
+<div class="page-data-holder mb-4">
+    <form id="actionForm" method="post">
+        <input type="hidden" name="CategoryID" value="@Model.CategoryID" />
+        <input type="hidden" name="CategoryRecordID" value="@Model.CategoryRecordID" />
+        <input type="hidden" name="LanguageID" value="@AppDataHelper.CurrentLanguage.ID" />
+
+        <div class="card mt-3">
+            @if (ConfigurationsHelper.EnableMultilingual)
+            {
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        @foreach (var language in LanguagesHelper.EnabledLanguages)
+                        {
+                            var isActive = language.ShortCode == AppDataHelper.CurrentLanguage.ShortCode;
+
+                            <li class="nav-item">
+                                <a class="nav-link @(isActive ? "active" : string.Empty)" href="@(isActive ? "#" : Url.LanguageBasedURL(language.ShortCode))">
+                                    @language.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            <div class="card-body">
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Categories.Action.Name".Localized())
+                    </label>
+                    <input class="form-control" name="Name" value="@Model.Name" placeholder="@("Dashboard.Categories.Action.NamePlaceholder".Localized())" />
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Categories.Action.Summary".Localized())
+                    </label>
+                    <textarea class="form-control" name="Summary" placeholder="@("Dashboard.Categories.Action.SummaryPlaceholder".Localized())" rows="2">@Model.Summary</textarea>
+                </div>
+
+                <div class="form-group mb-0">
+                    <label>
+                        @("Dashboard.Categories.Action.Description".Localized())
+                    </label>
+                    <textarea class="form-control" name="Description" placeholder="@("Dashboard.Categories.Action.DescriptionPlaceholder".Localized())" rows="6">@Model.Description</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Categories.Action.ParentCategory".Localized())
+                    </label>
+                    <select class="form-control" name="ParentCategoryID">
+                        <option value="0">@("Dashboard.Categories.Action.ParentCategoryNone".Localized())</option>
+                        @foreach (var category in Model.Categories.Where(x => x.ID != Model.CategoryID))
+                        {
+                            var selected = Model.ParentCategoryID == category.ID ? "selected" : string.Empty;
+
+                            var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            if (currentLanguageCategoryRecord != null)
+                            {
+                                <option value="@category.ID" @selected>
+                                    @currentLanguageCategoryRecord.Name
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@category.ID" @selected>
+                                    @category.SanitizedName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        @("Dashboard.Categories.Action.URL".Localized())
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                @Url.SearchProducts(category: "").ToSiteURL()/
+                            </span>
+                        </div>
+                        <input type="text" class="form-control" id="SanitizedName" name="SanitizedName" value="@Model.SanitizedName">
+                    </div>
+                </div>
+
+                <div class="form-group" id="pics-container">
+                    <label>
+                        @("Dashboard.Categories.Action.SelectPicture".Localized())
+                    </label>
+                    <input id="categoryPicture" class="uPicUploadInput form-control" type="file" />
+                    <input type="hidden" name="PictureID" value="@Model.PictureID"/>
+                    <div id="pictureArea" class="pt-2">
+                        @Html.Picture(Model.Picture, "image img-thumbnail", "height: 433px; width: 380px; border: 1px solid #efefef", lazyLoad: false)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" name="isFeatured" value="true" class="form-check-input" id="isFeatured" @(Model.isFeatured ? "checked" : string.Empty)>
+                        <input type="hidden" name="isFeatured" value="false">
+
+                        <label class="form-check-label" for="isFeatured">
+                            @("Dashboard.Categories.Action.Featured".Localized())
+                        </label>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="form-group mb-0">
+                    @if (Model.CategoryID > 0)
+                    {
+                        <button class="btn btn-success" type="submit" id="actionButton">
+                            <i class="fas fa-edit mr-1"></i>
+                            @("Dashboard.Categories.Update".Localized())
+                        </button>
+                        <button class="deleteButton btn btn-danger" type="button" data-id="@Model.CategoryID">
+                            <i class="fas fa-trash-alt mr-1"></i>
+                            @("Dashboard.Categories.Delete".Localized())
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success" type="submit" id="actionButton">
+                            <i class="fas fa-plus mr-1"></i>
+                            @("Dashboard.Categories.Save".Localized())
+                        </button>
+                    }
+                    <a class="btn btn-secondary" href="@Url.ListAction("Categories")">
+                        <i class="fas fa-angle-double-left mr-1"></i>
+                        @("Dashboard.Categories.Cancel".Localized())
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="pictureTemplate" style="display:none">
+    @Html.UserAvatar(new eCommerce.Entities.Picture(), "image img-thumbnail", "height: 433px; width: 380px; border: 1px solid #efefef")
+</div>
+
+<script>
+    $("#SanitizedName").keyup(function () {
+        var titleValue = $(this).val();
+        if (titleValue) {
+            var sanitizedURL = titleValue.replace(/[^a-zA-Z0-9-]/g, "-").replace(/-{2,}/g, "-").toLowerCase();
+            $("#SanitizedName").val(sanitizedURL);
+        }
+    });
+
+    
+    $("#categoryPicture").change(function () {
+		var pictures = this.files;
+
+		var picsData = new FormData();
+
+		for (var i = 0; i < pictures.length; i++) {
+			picsData.append("Picture", pictures[i]);
+		}
+        
+        addLoader("pics-container");
+		$.ajax({
+			url: "@Url.UploadPictures()",
+			type: "post",
+			data: picsData,
+			dateType: "json",
+			processData: false,
+			contentType: false
+		})
+        .done(function (responses) {
+            if (responses != undefined) {
+                var picResponse = responses[0];
+                AttachNewImage(picResponse.pictureURL, picResponse.ID);
+            }
+            removeLoader("pics-container");
+        })
+        .fail(function () {
+             removeLoader("pics-container");
+             Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+		});
+    });
+    
+    function AttachNewImage(imageURL, imageID) {
+        var $newimgHTML = $("#pictureTemplate").clone();
+
+        $newimgHTML.find(".image").attr("src", "/content/images/" + imageURL);
+        $newimgHTML.find(".image").attr("data-id", imageID);
+
+        $("input[name=PictureID]").val(imageID);
+
+        $("#pictureArea").html($newimgHTML.html());
+    }
+
+    $("#actionForm").validate({
+		errorClass: "alert alert-danger",
+		errorElement: "div",
+		rules: {
+			Name: {
+				required: true,
+				minlength: 3,
+				maxlength: 150
+			},
+			Description: {
+				minlength: 20
+			}
+		},
+		messages: {
+			Name: {
+				required: "@("Dashboard.Categories.Action.Validation.NameRequired".Localized())",
+				minlength: "@("Dashboard.Categories.Action.Validation.NameMinimumLength".Localized().ToString().Replace("{min}", "3"))",
+				maxlength: "@("Dashboard.Categories.Action.Validation.NameMaximumLength".Localized().ToString().Replace("{max}", "150"))"
+			},
+			Description: {
+				minlength: "@("Dashboard.Categories.Action.Validation.DescriptionMinimumLength".Localized().ToString().Replace("{min}", "20"))",
+			}
+		},
+		highlight: function (element, errorClass) {
+			$(element).removeClass(errorClass);
+		}
+	});
+
+    $("#actionForm").submit(function (e) {
+        if ($("#actionForm").valid()) {
+            addLoader("actionForm");
+            $.ajax({
+                type: "post",
+                data: $("#actionForm").serialize()
+			})
+            .done(function (response) {
+                if (response.Success) {
+                    window.location.href = "@Url.ListAction("Categories")";
+			    }
+                else {
+                    removeLoader("actionForm");
+                    Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+			    }
+            })
+            .fail(function () {
+                 removeLoader("actionForm");
+                 Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			});
+        }
+
+        e.preventDefault();
+    });
+
+    $(".deleteButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+            cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("actionForm");
+				$.ajax({
+					url: "@Url.DeleteAction("Categories")",
+                    type: "post",
+                    data: { id: recordID }
+				})
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+                        window.location.href = "@Url.ListAction("Categories")";
+				    }
+                    else {
+                        removeLoader("actionForm");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+				    }
+				})
+                .fail(function () {
+                     removeLoader("actionForm");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			    });
+            }
+        });
+    });
+</script>

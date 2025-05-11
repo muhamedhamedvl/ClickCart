@@ -1,0 +1,185 @@
+﻿@model eCommerce.Web.Areas.Dashboard.ViewModels.CategoriesListingViewModel
+
+@if (Model != null && Model.Categories != null && Model.Categories.Count > 0)
+{
+    <table class="table table-hover table-responsive-sm m-0">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @("Dashboard.Categories.List.Name".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Categories.List.ParentCategory".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Categories.List.Description".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Categories.List.Products".Localized())
+                </th>
+                <th>
+                    @("Dashboard.Categories.List.Actions".Localized())
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model.Categories)
+            {
+                var currentLanguageCategoryRecord = category.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                var doesntExistsInCurrentLanguage = currentLanguageCategoryRecord == null;
+
+                <tr>
+                    <td>
+                        @if (doesntExistsInCurrentLanguage)
+                        {
+                            <i class="text-danger fas fa-exclamation-triangle" title="@("Dashboard.Commons.RecordNotSpecifiedInCurrentLanguage".Localized())"></i>
+                        }
+
+                        @if (category.isFeatured)
+                        {
+                            <i class="text-warning fas fa-star m-1" title="@("Dashboard.Categories.List.FeaturedCategory".Localized())"></i>
+                        }
+
+                        <a href="@Url.SearchProducts(category: category.SanitizedName)" target="_blank">
+                            @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Name : string.Empty)
+                        </a>
+                    </td>
+                    <td>
+                        @if (category.ParentCategory != null)
+                        {
+                            var currentLanguageParentCategoryRecord = category.ParentCategory.CategoryRecords.FirstOrDefault(x => x.LanguageID == AppDataHelper.CurrentLanguage.ID);
+
+                            if (currentLanguageParentCategoryRecord != null)
+                            {
+                                <span>
+                                    @currentLanguageParentCategoryRecord.Name
+                                </span>
+                            }
+                            else
+                            {
+                                <i class="text-danger fas fa-exclamation-triangle" title="@("Dashboard.Commons.ParentCategoryRecordNotSpecifiedInCurrentLanguage".Localized())"></i>
+                            }
+                        }
+                        else
+                        {
+                            <span>
+                                -
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        @(currentLanguageCategoryRecord != null ? currentLanguageCategoryRecord.Description.IfNullOrEmptyShowAlternative("-") : string.Empty)
+                    </td>
+                    <td>
+                        <a class="link" href="@Url.Products(categoryID: category.ID)" role="button" target="_blank">
+                            @(category.Products != null ? category.Products.Count : 0)
+                        </a>
+                    </td>
+                    <td>
+						<div class="btn-group" role="group">
+                            <a class="btn btn-primary" href="@Url.EditAction("Categories", category.ID)">
+                                <i class="fas fa-edit mr-1"></i>
+                                @("Dashboard.Categories.List.Edit".Localized())
+                            </a>
+                            <button class="deleteButton btn btn-danger" data-id="@category.ID">
+                                <i class="fas fa-trash-alt mr-1"></i>
+                                @("Dashboard.Categories.List.Delete".Localized())
+                            </button>
+						</div>                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <nav class="my-2">
+            <ul class="pagination justify-content-center">
+
+                @if (Model.Pager.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Categories(Model.SearchTerm, Model.Pager.CurrentPage - 1, Model.ParentCategoryID)">@("Dashboard.Pagination.Previous".Localized())</a>
+                    </li>
+                }
+
+                @for (int page = Model.Pager.StartPage; page < Model.Pager.EndPage + 1; page++)
+                {
+                    var active = page == Model.Pager.CurrentPage ? "active" : string.Empty;
+
+                    <li class="page-item @active">
+                        <a class="page-link" href="@Url.Categories(Model.SearchTerm, page, Model.ParentCategoryID)">
+                            @page
+                        </a>
+                    </li>
+                }
+
+                @if (Model.Pager.CurrentPage == Model.Pager.EndPage)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Categories(Model.SearchTerm, Model.Pager.CurrentPage + 1, Model.ParentCategoryID)">@("Dashboard.Pagination.Next".Localized())</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+    <script>
+    $(".deleteButton").click(function () {
+        var recordID = $(this).attr("data-id");
+
+        Swal.fire({
+            title: '@("Dashboard.Message.Warning".Localized())',
+            text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+            cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+        }).then((result) => {
+            if (result.value) {
+                addLoader("list-holder");
+				$.ajax({
+					url: "@Url.DeleteAction("Categories")",
+                    type: "post",
+                    data: { id: recordID }
+				})
+                .done(function (response) {
+                    if (response != null && response.Success != undefined && response.Success) {
+                        window.location.href = "@Url.ListAction("Categories")";
+				    }
+                    else {
+                        removeLoader("list-holder");
+                        Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
+				    }
+				})
+                .fail(function () {
+                     removeLoader("list-holder");
+                     Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
+			    });
+            }
+        });
+    });
+    </script>
+}
+else
+{
+    <div class="alert alert-warning rounded-0 m-0" role="alert">
+        @("Dashboard.Categories.List.NoRecordFound".Localized())
+    </div>
+}

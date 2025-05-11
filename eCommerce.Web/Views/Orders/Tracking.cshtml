@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNet.Identity
+@using eCommerce.Entities
+@model eCommerce.Web.ViewModels.TrackOrderViewModel
+
+@if (Model != null)
+{
+    Model.PageTitle = "PP.Tracking.Title".LocalizedString();
+    Model.PageDescription = "PP.Tracking.Description".LocalizedString();
+    Model.PageURL = Url.OrderTrack();
+    Model.PageImageURL = PictureHelper.PageImageURL("tracking.jpg");
+
+    <div class="breacrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text product-more">
+                        <a href="@Url.Home()">
+                            <i class="fas fa-home mr-1"></i>
+                            @("PP.Header.Menu.Home".Localized())
+                        </a>
+                        <span>@Model.PageTitle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1">
+                    <div class="page-content-holder">
+                        <div class="page-content-header">
+                            <h2>@Model.PageTitle</h2>
+                            <p>
+                                @Model.PageDescription
+                            </p>
+                        </div>
+                        <div class="">
+                            <form method="get" action="@Url.OrderTrack()">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@("PP.Tracking.OrderID".LocalizedString())</span>
+                                    </div>
+                                    <input type="text" name="orderID" class="form-control" placeholder="@("PP.Tracking.OrderIDPlaceholder".LocalizedString())" value="@Model.OrderID" required>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="submit">@("PP.Tracking.TrackOrder".LocalizedString())</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="tracking-holder">
+                            @if (Model.OrderID.HasValue)
+                            {
+                                Html.RenderPartial("_TrackOrder");
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,77 @@
+﻿@model eCommerce.Web.ViewModels.LoginViewModel
+<form id="loginForm" method="post">
+    @Html.AntiForgeryToken()
+    <div class="group-input">
+        <label for="username">@("PP.Login.Username".LocalizedString()) <span class="text-danger">*</span></label>
+        <input class="form-control" name="Username" placeholder="@("PP.Login.UsernamePlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Login.UsernamePlaceholder".LocalizedString())'">
+    </div>
+    <div class="group-input">
+        <label for="pass">@("PP.Login.Password".LocalizedString()) <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" name="Password" placeholder="@("PP.Login.PasswordPlaceholder".LocalizedString())" onfocus="this.placeholder = ''" onblur="this.placeholder = '@("PP.Login.PasswordPlaceholder".LocalizedString())'">
+    </div>
+    <div class="group-input gi-check">
+        <div class="gi-more">
+            <label for="RememberMe">
+                @("PP.Login.RememberMe".LocalizedString())
+                <input type="checkbox" name="RememberMe" id="RememberMe" value="true" checked>
+                <span class="checkmark"></span>
+            </label>
+            <a href="@Url.ForgotPassword()" class="forget-pass">@("PP.Login.ForgotPassword".LocalizedString())</a>
+        </div>
+    </div>
+    <div class="group-input errorsRow" style="display:none">
+        <div class="alert alert-danger errorMessages mb-0" role="alert"></div>
+    </div>
+    <button type="submit" id="loginButton" class="site-btn login-btn">@("PP.Login.LoginAccount".LocalizedString())</button>
+</form>
+
+
+<script>
+    var _usernameRequired = "@("PP.Login.Validation.UsernameRequired".LocalizedString())";
+    var _passwordRequired = "@("PP.Login.Validation.PasswordRequired".LocalizedString())";
+
+    validateLoginForm();
+
+    $("#loginForm").submit(function (e) {
+        submitForm();
+
+        e.preventDefault();
+    });
+
+    function submitForm() {
+        $(".errorsRow .errorMessages", "#loginForm").html("");
+        $(".errorsRow", "#loginForm").hide(200);
+        $(".errorsRow .errorMessages", "#loginForm").hide();
+
+        if ($("#loginForm").valid()) {
+            addLoader("login-container");
+
+            $.ajax({
+                url: "@Url.Login()",
+                type: "post",
+                data: $("#loginForm").serialize(),
+            })
+           .done(function (response) {
+                if (response != null && response.Success) {
+                    window.location.href = "@(!string.IsNullOrEmpty(Model.ReturnUrl) ? Model.ReturnUrl : Url.Home() )";
+                }
+                else {
+                    removeLoader("login-container");
+
+                    $(".errorsRow .errorMessages", "#loginForm").html(response.Messages);
+                    $(".errorsRow", "#loginForm").show(200);
+                    $(".errorsRow .errorMessages", "#loginForm").show();
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                 removeLoader("login-container");
+
+                 Swal.fire("@("PP.Message.Error".Localized())", "@("PP.Message.GenericErrorMessage".Localized())", "error");
+
+                 console.log('jqXHR:' + jqXHR);
+                 console.log('textStatus:' + textStatus);
+                 console.log('errorThrown:' + errorThrown);
+            });
+        }
+    }
+</script>

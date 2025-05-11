@@ -1,0 +1,66 @@
+﻿@model eCommerce.Web.ViewModels.CheckoutViewModel
+
+@if (Model != null && Model.User != null)
+{
+    <form id="shippingDetailsForm">
+        <div class="form-row mb-3">
+            <div class="col">
+                <label>@("PP.Checkout.Country".LocalizedString())</label>
+                <input name="Country" type="text" value="@Model.User.Country" class="form-control">
+            </div>
+            <div class="col">
+                <label>@("PP.Checkout.City".LocalizedString())</label>
+                <input name="City" type="text" value="@Model.User.City" class="form-control">
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="col">
+                <label>@("PP.Checkout.Address".LocalizedString())</label>
+                <textarea name="Address" class="form-control" style="border: 2px solid #ebebeb;">@Model.User.Address</textarea>
+            </div>
+            <div class="col">
+                <label>@("PP.Checkout.ZipCode".LocalizedString())</label>
+                <input name="ZipCode" type="text" value="@Model.User.ZipCode" class="form-control">
+            </div>
+        </div>
+    </form>
+}
+
+<script>
+    $("#shippingDetailsForm").validate({
+        ignore: [],
+        errorClass: "alert alert-danger mb-0 rounded-0",
+        errorElement: "div",
+        rules: {
+            Country: {
+                required: true,
+            },
+            City: {
+                required: true,
+            },
+            Address: {
+                required: true,
+            },
+            ZipCode: {
+                required: true,
+            },
+        },
+        messages: {
+            Country: {
+                required: "@("PP.Checkout.Shipping.Validations.CountryRequired".LocalizedString())",
+            },
+            City: {
+                required: "@("PP.Checkout.Shipping.Validations.CityRequired".LocalizedString())",
+            },
+            Address: {
+                required: "@("PP.Checkout.Shipping.Validations.AddressRequired".LocalizedString())",
+            },
+            ZipCode: {
+                required: "@("PP.Checkout.Shipping.Validations.ZipCodeRequired".LocalizedString())",
+            },
+        },
+        highlight: function (element, errorClass) {
+            $(element).removeClass(errorClass);
+        }
+    });
+</script>

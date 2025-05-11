@@ -1,0 +1,20 @@
+﻿<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <div>
+                <i title="Copyrights" class="fas fa-copyright dont-transform text-warning"></i>
+                @Html.Raw("PP.Footer.CopyrightsMessage".LocalizedString().Replace("{application}", "<a href='" + Url.Home()+ "'>" + ConfigurationsHelper.ApplicationName + "</a>").Replace("{date}", DateTime.Now.Year.ToString()))
+            </div>
+            <div class="mt-2" dir="ltr">
+                <small class='text-muted' dir='ltr'>
+                    <span>
+                        <i class='fas fa-laptop-code text-success' title='Software'></i> Powered by <a href='https://www.ecommercemvc.com/' target='_blank'>eCommerce MVC</a>.
+                    </span>
+                    <span>
+                        Template Designed by <a class='text-primary' href='https://startbootstrap.com/themes/sb-admin-2/' target='_blank' rel='nofollow'>Start Bootstrap</a>.
+                    </span>
+                </small>
+            </div>
+        </div>
+    </div>
+</footer>
