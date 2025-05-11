@@ -4,8 +4,8 @@
 
 @if (Model != null && Model.Order != null)
 {
-    Model.PageTitle = "PP.PrintInvoice.Title".LocalizedString().Replace("{orderid}", Model.Order.ID.ToString());
-    Model.PageDescription = "PP.PrintInvoice.Description".LocalizedString();
+    Model.PageTitle = "PrintInvoice".LocalizedString().Replace("{orderid}", Model.Order.ID.ToString());
+    Model.PageDescription = "".LocalizedString();
     Model.PageURL = Url.PrintInvoice(Model.Order.ID);
     Model.PageImageURL = PictureHelper.PageImageURL("print-invoice.jpg");
 
