@@ -2,11 +2,11 @@
 ![Logo](https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F3vmmsplqnguvzk0xovpl.jpg)
 
 
-# Click Cart
+# ClickCart
 
 ClickCart is an e-commerce order management system designed to handle the full lifecycle of an online purchase — from product browsing to order placement, payment processing, and shipping management. The system integrates multiple modules and external entities to ensure smooth transactions and logistics for customers, administrators, and shipping providers.
 
-🚀 Features
+# 🚀 Features
 Customer Experience: Browse products, place orders, and make payments through a streamlined interface.
 
 Order Management: Efficient handling of order details, inventory validation, and coordination with payment and shipping systems.
@@ -19,7 +19,7 @@ Shipping Coordination: Integration with shipping providers to track and confirm 
 
 Admin Dashboard: Manage products, monitor orders, and maintain system data.
 
-🧩 System Modules Overview
+# 🧩 System Modules Overview
 1. Order Management 
 Handles order placement and tracking.
 
