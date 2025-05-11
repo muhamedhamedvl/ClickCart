@@ -42,7 +42,7 @@ Receives confirmed orders for delivery.
 
 Updates delivery status and confirms shipment with the shipping provider.
 
-🔗 External Entities
+# 🔗 External Entities
 Customer: Interacts with the system to place and pay for orders.
 
 Admin: Manages product listings and oversees order processing.
