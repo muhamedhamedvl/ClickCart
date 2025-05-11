@@ -64,8 +64,18 @@ Shipping Provider: Handles physical delivery and shipment updates.
 
 [ClickCart:Documentation](https://drive.google.com/drive/folders/1o6cvz5qT_ksOzVspG3sARWuVJTfPxXul)
 
+<pre> ═══════════════ 📘 VISIT 📘 ═══════════════ </pre>
 ## Register
 ![registration](Images/Register.png)
+________________________________________________________________________________________________________________________________________________
+## Login
+![login](Images/Login.png)
+________________________________________________________________________________________________________________________________________________
+## Home
+![login](Images/Home1.png)
+![login](Images/Home2.png)
+
+
 
 ## Feedback
 
