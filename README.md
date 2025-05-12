@@ -62,7 +62,7 @@ Shipping Provider: Handles physical delivery and shipment updates.
 
 ## Documentation
 
-[ClickCart:Documentation]([https://drive.google.com/drive/folders/1o6cvz5qT_ksOzVspG3sARWuVJTfPxXul](https://drive.google.com/file/d/12fLhuwQjFSzFCuJaUA9kBzsCGey7PRvW/view?usp=drive_link))
+[ClickCart:Documentation](https://drive.google.com/file/d/1jBiW044ED9lcxrqN8u6pMmM3Kl3p-j_Z/view?usp=sharing)
 ________________________________________________________________________________________________________________________________________________
 ## Register
 ![registration](Images/Register.png)
