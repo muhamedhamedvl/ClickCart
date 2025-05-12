@@ -58,6 +58,7 @@ Shipping Provider: Handles physical delivery and shipment updates.
 - [Adham Assem](https://github.com/sioranx69)
 - [Mohand Sadek](https://github.com/Muhanned-Sadk)
 - [Ahmed ELSabakhy](https://github.com/Ahmed-Alsebakhy)
+- [Youssef Elabher](https://github.com/usifelabher)
 
 
 ## Documentation
