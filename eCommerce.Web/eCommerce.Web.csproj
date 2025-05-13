@@ -529,6 +529,10 @@
     <Content Include="Content\images\demo\a9b67549-4ef7-409b-92e2-8655aec21f4a.png" />
     <Content Include="Content\images\demo\af3a7ff7-d049-441c-ae4e-e216b3fbfd86.png" />
     <Content Include="Content\images\demo\c0ed2af7-6eb6-4b8a-bb73-45c4b4d410f1.png" />
+    <Content Include="Content\images\demo\team\person1.jpg" />
+    <Content Include="Content\images\demo\team\person2.png" />
+    <Content Include="Content\images\demo\team\person3.png" />
+    <Content Include="Content\images\demo\team\person4.png" />
     <Content Include="Content\images\error-page.jpg" />
     <Content Include="Content\images\site\cash-on-delivery.png" />
     <Content Include="Content\images\site\default-bg.jpg" />
@@ -4934,6 +4938,7 @@
     <Content Include="Views\Shared\_ExternalSocialScripts.cshtml" />
     <None Include="Properties\PublishProfiles\ClickCartMuhamedHamed - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\FolderPublish.pubxml" />
+    <None Include="Properties\PublishProfiles\MuhamedHamedClickCart - Web Deploy.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eCommerce.Data\eCommerce.Data.csproj">
