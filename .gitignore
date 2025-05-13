@@ -365,3 +365,6 @@ FodyWeavers.xsd
 eCommerceDBInitializer.cs
 D:\ClickCart\ClickCart\Source Code\eCommerceMVC\eCommerce.Data
 /eCommerce.Data/eCommerceDBInitializer.cs
+/eCommerce.Web/Web.config
+/eCommerce.Web/Web.Debug.config
+/eCommerce.Web/Web.Release.config
