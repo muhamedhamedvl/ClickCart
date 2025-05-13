@@ -54,39 +54,45 @@ namespace eCommerce.Web.Areas.Dashboard.Controllers
 
             model.Pager = new Pager(commentsCount, pageNo, (int)RecordSizeEnums.Size10);
 
-            if(showUserCommentsOnly)
+            if (showUserCommentsOnly)
             {
                 return PartialView("_UserComments", model);
             }
             else return View(model);
-        }        
+        }
+
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult Delete(int ID)
         {
-            JsonResult result = new JsonResult();
-
             try
             {
                 var comment = CommentsService.Instance.GetCommentByID(ID);
 
-                if (comment != null && User.Identity.IsAuthenticated && (User.IsInRole("Administrator") || comment.UserID == User.Identity.GetUserId()))
+                if (comment == null)
                 {
-                    var operation = CommentsService.Instance.DeleteComment(comment);
+                    return Json(new { Success = false, Message = "Comment not found." });
+                }
 
-                    result.Data = new { Success = operation, Message = operation ? string.Empty : "Dashboard.Comments.Action.Validation.UnableToDeleteComment".LocalizedString() };
-                }
-                else
+                var currentUserId = User.Identity.GetUserId();
+
+                if (!User.Identity.IsAuthenticated || (!User.IsInRole("Administrator") && comment.UserID.ToString() != currentUserId))
                 {
-                    throw new Exception("Dashboard.Comments.Action.Validation.NotAuthorizedToDeleteComment".LocalizedString());
+                    return Json(new { Success = false, Message = "Not authorized." });
                 }
+
+                bool success = CommentsService.Instance.DeleteComment(comment);
+                return Json(new
+                {
+                    Success = success,
+                    Message = success ? string.Empty : "Failed to delete comment."
+                });
             }
             catch (Exception ex)
             {
-                result.Data = new { Success = false, Message = string.Format("{0}", ex.Message) };
+                return Json(new { Success = false, Message = "An error occurred." });
             }
-
-            return result;
         }
     }
 }

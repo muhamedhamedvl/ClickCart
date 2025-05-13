@@ -110,8 +110,6 @@ namespace eCommerce.Services
         {
             var context = DataContextHelper.GetNewContext();
 
-            //var comment = context.Comments.Find(ID);
-
             comment.IsDeleted = true;
 
             context.Entry(comment).State = System.Data.Entity.EntityState.Modified;

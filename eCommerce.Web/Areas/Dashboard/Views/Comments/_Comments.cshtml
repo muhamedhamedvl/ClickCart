@@ -193,11 +193,11 @@
 				$("#dtLoader").show();
 				$("#response-holder").hide();
 
-				$.ajax({
-					url: "@Url.DeleteAction("Comments")",
-                       method: "post",
-                       data: { id : $(this).attr("data-id") }
-				})
+                $.ajax({
+                    url: '@Url.Action("Delete", "Comments", new { area = "Dashboard" })',
+                    method: "post",
+                    data: { id: $(this).attr("data-id") }
+                })
                 .done(function (response) {
                     if (response != null && response.Success != undefined && response.Success) {
                         commentRow.next("hr").remove();

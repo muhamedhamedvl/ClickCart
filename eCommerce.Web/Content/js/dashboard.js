@@ -29,7 +29,23 @@ function updateEditFields() {
 function removeThis(elem) {
     $(elem).remove();
 }
-
+$.ajax({
+    url: 'Areas/Dashboard/Controllers/Comments/Delete',
+    type: 'POST',
+    data: {
+        ID: commentId 
+    },
+    headers: {
+        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+    },
+    success: function (response) {
+        if (response.Success) {
+            alert('Deleted successfully');
+        } else {
+            alert('Error: ' + response.Message);
+        }
+    }
+});
 function removeImage(elem) {
     $(elem).parents(".thisImage").remove();
 }

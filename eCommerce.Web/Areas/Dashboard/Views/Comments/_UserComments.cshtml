@@ -168,44 +168,53 @@
 		        });
             }
         });
+$(".deleteButton").click(function () {
+    var recordID = $(this).attr("data-id");
 
-        $(".deleteButton").click(function () {
-            var recordID = $(this).attr("data-id");
+    Swal.fire({
+        title: '@("Dashboard.Message.Warning".Localized())',
+        text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
+        cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
+    }).then((result) => {
+        if (result.value) {
+            addLoader("response-holder");
 
-            Swal.fire({
-                title: '@("Dashboard.Message.Warning".Localized())',
-                text: "@("Dashboard.Message.ConfirmDeleteWarning".Localized())",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '@("Dashboard.Message.ConfirmDelete".Localized())',
-                cancelButtonText: '@("Dashboard.Message.CancelDelete".Localized())'
-            }).then((result) => {
-                if (result.value) {
-                    addLoader("response-holder");
-       	    	    $.ajax({
-       	    	    	url: "@Url.DeleteAction("Comments")",
-                        type: "post",
-                        data: { id: recordID }
-       	    	    })
-                    .done(function (response) {
-                        removeLoader("response-holder");
+            $.ajax({
+                url: "@Url.Action("Delete", "Comments", new { area = "Dashboard" })",
+                type: "POST",
+                data: { ID: recordID }
+            })
+            .done(function (response) {
+                removeLoader("response-holder");
 
-                        if (response != null && response.Success != undefined && response.Success) {
-                            searchComments();
-       	    	        }
-                        else {
-                            Swal.fire("@("Dashboard.Message.Error".Localized())", response.Message, "error");
-       	    	        }
-       	    	    })
-                    .fail(function () {
-                        removeLoader("response-holder");
-                        Swal.fire("@("Dashboard.Message.Error".Localized())", "@("Dashboard.Message.GenericErrorMessage".Localized())", "error");
-       	            });
+                if (response && response.Success) {
+                    searchComments(); // Or remove row from DOM if you prefer
+                } else {
+                    Swal.fire(
+                        "@("Dashboard.Message.Error".Localized())",
+                        response.Message,
+                        "error"
+                    );
                 }
+            })
+            .fail(function () {
+                removeLoader("response-holder");
+
+                Swal.fire(
+                    "@("Dashboard.Message.Error".Localized())",
+                    "@("Dashboard.Message.GenericErrorMessage".Localized())",
+                    "error"
+                );
             });
-        });
+        }
+    });
+});
+
     </script>
 }
 else
