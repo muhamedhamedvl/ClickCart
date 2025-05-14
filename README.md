@@ -63,7 +63,7 @@ Shipping Provider: Handles physical delivery and shipment updates.
 
 ## Documentation
 
-[ClickCart:Documentation](https://drive.google.com/file/d/1UoKF0Ohr2b-b3aeeBLQldeUiVMpaA5TM/view?usp=sharing)
+[Presentaion](https://drive.google.com/file/d/1UoKF0Ohr2b-b3aeeBLQldeUiVMpaA5TM/view?usp=sharing)
 ________________________________________________________________________________________________________________________________________________
 ## Register
 ![registration](Images/Register.png)
@@ -115,5 +115,8 @@ ________________________________________________________________________________
 ![Languages](Images/Languages.png)
 ________________________________________________________________________________________________________________________________________________
 ## Feedback
-If you have any feedback, please reach out to us at mh1191128@gmail.com
+If you have any feedback, please reach out to us at 
+mh1191128@gmail.com
+houndasadiq@gmail.com
+adhmassem02@gmail.com
 
