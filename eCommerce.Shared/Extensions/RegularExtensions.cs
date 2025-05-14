@@ -77,10 +77,7 @@ namespace eCommerce.Shared.Extensions
         }
         public static string WithCurrency(this decimal price)
         {
-            //if(ConfigurationsHelper.DigitsAfterDecimalPoint > -1)
-            //{
-            //    price = decimal.Round(price, ConfigurationsHelper.DigitsAfterDecimalPoint, MidpointRounding.AwayFromZero);
-            //}
+
 
             return ConfigurationsHelper.PriceCurrencyPosition
                                        .Replace("{price}", price.ToDecimalWithPoints(ConfigurationsHelper.DigitsAfterDecimalPoint))
@@ -171,7 +168,7 @@ namespace eCommerce.Shared.Extensions
 
                 if (m.Success)
                 {
-                    //found an issue when the email address part before @ was less than 4 characters, the regex match value becomes empty string.
+                   
                     if(!string.IsNullOrEmpty(m.Value))
                     {
                         hiddenEmail = email.Replace(m.Value, new string('*', m.Length));
@@ -193,7 +190,6 @@ namespace eCommerce.Shared.Extensions
             {
                 if (!string.IsNullOrEmpty(text))
                 {
-                    //6VviuWw6XCwdRXwjio19gikuXZSh7n8k/ZjJXy7rSn3NkABcEQwBu7OyUpBNg71V ???
 
                     var rtext = Regex.Match(text, textRegulatorPattern.Regulate());
                     if (rtext.Success)
