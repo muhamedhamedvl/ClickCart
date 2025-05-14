@@ -815,6 +815,10 @@
     <Content Include="Content\images\site\sliders\slider1.jpg" />
     <Content Include="Content\images\site\sliders\slider2.jpg" />
     <Content Include="Content\images\site\sliders\slider3.jpg" />
+    <Content Include="Content\images\site\team\person1.jpg" />
+    <Content Include="Content\images\site\team\person2.png" />
+    <Content Include="Content\images\site\team\person3.png" />
+    <Content Include="Content\images\site\team\person4.png" />
     <Content Include="Content\images\site\user-default-avatar.png" />
     <Content Include="Content\js\dashboard.js" />
     <Content Include="Content\js\site.js" />
@@ -4928,7 +4932,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\images\site\team\" />
     <Folder Include="Content\images\thumbnails\" />
   </ItemGroup>
   <ItemGroup>
@@ -4936,9 +4939,8 @@
     <Content Include="Areas\Dashboard\Views\Dashboard\_NewsletterSubscribersListing.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_ExternalSocialScripts.cshtml" />
-    <None Include="Properties\PublishProfiles\ClickCartMuhamedHamed - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\ClickCart - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\FolderPublish.pubxml" />
-    <None Include="Properties\PublishProfiles\MuhamedHamedClickCart - Web Deploy.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eCommerce.Data\eCommerce.Data.csproj">
