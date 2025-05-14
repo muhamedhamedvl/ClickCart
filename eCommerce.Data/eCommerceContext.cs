@@ -18,7 +18,7 @@ namespace eCommerce.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // This needs to go before the other rules!
+            base.OnModelCreating(modelBuilder); 
             
             modelBuilder.Entity<Promo>()
                 .HasIndex(p => new { p.Code })
@@ -30,16 +30,12 @@ namespace eCommerce.Data
             modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims");
             modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins");
         }
-
         public DbSet<Language> Languages { get; set; }
         public DbSet<LanguageResource> LanguageResources { get; set; }
-
         public DbSet<Category> Categories { get; set; }
         public DbSet<CategoryRecord> CategoryRecords { get; set; }
-
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductRecord> ProductRecords { get; set; }
-
         public DbSet<Promo> Promos { get; set; }
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<ProductPicture> ProductPictures { get; set; }
@@ -48,9 +44,7 @@ namespace eCommerce.Data
         public DbSet<Configuration> Configurations { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderHistory> OrderHistories { get; set; }
-
         public DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
-
         public static eCommerceContext Create()
         {
             return new eCommerceContext();
