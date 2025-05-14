@@ -2,7 +2,7 @@
 ![Logo](https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F9n8r4s8dnq63xxwguojm.jpeg)
 
 
-# ClickCart
+#ClickCart
 
 ClickCart is an e-commerce order management system designed to handle the full lifecycle of an online purchase — from product browsing to order placement, payment processing, and shipping management. The system integrates multiple modules and external entities to ensure smooth transactions and logistics for customers, administrators, and shipping providers.
 
